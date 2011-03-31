@@ -3,8 +3,11 @@ Test Workspace
  /test - mess around with ideas in here
 
 Course Work Directories:
- /course1 - ITM 7401: Java Programming
- /course2 - ITM 7402: Advanced Java Programming: Core Package
- /course3 - ITM 7403: Java and XML Development
+ /java1 - ITM 7401: Java Programming
+ /java2 - ITM 7402: Advanced Java Programming: Core Package
+ /java3 - ITM 7403: Java and XML Development
 
+ /net1  - ITM 7411: Network and Data Communication Standards
+ /net2  - ITM 7412: Internetworking with TCP/IP
+ /net3  - ITM 7413: Network Security for Enterprise/Security+ Certification
 
