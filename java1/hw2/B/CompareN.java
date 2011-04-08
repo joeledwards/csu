@@ -3,32 +3,41 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-class Compare_abc 
+class CompareN
 {
-    private static final int ARG_COUNT = 3;
+    public static final int MIN_ARGS = 2;
+    public static final int MAX_ARGS = 26;
 
     public static void main(String args[]) {
-        if (args.length != ARG_COUNT) {
-            System.out.println("Compare_abc: " +ARG_COUNT+ " arguments required");
+        if ((MIN_ARGS == MAX_ARGS) && (args.length != MAX_ARGS)) {
+            System.out.println("Compare_abc: " +MAX_ARGS+ " arguments required");
+            System.exit(1);
+        }
+        if (args.length < MIN_ARGS) {
+            System.out.println("Compare_abc: at least " +MIN_ARGS+ " arguments required");
+            System.exit(1);
+        }
+        if (args.length > MAX_ARGS) {
+            System.out.println("Compare_abc: at most " +MAX_ARGS+ " arguments allowed");
             System.exit(1);
         }
 
-        TreeSet<ArrayList<Object>> tree = new TreeSet<ArrayList<Object>>(new Comparator<ArrayList<Object>>() 
-        {
+        Comparator<ArrayList<Object>> comp = new Comparator<ArrayList<Object>>() {
             public int compare(ArrayList<Object> a, ArrayList<Object> b) {
                 Integer a_val = (Integer)a.get(1);
                 Integer b_val = (Integer)b.get(1);
+                String a_name = (String)a.get(0);
+                String b_name = (String)b.get(0);
                 if (a_val > b_val) {
                     return 1;
                 } else if (a_val < b_val) {
                     return -1;
                 } else {
-                    String a_name = (String)a.get(0);
-                    String b_name = (String)b.get(0);
                     return a_name.compareTo(b_name);
                 }
             }
-        });
+        };
+        TreeSet<ArrayList<Object>> tree = new TreeSet<ArrayList<Object>>(comp);
 
         try {
             for (int i = 0; i < args.length; i++) {
@@ -38,7 +47,7 @@ class Compare_abc
                 tree.add(p);
             }
         } catch (NumberFormatException e) {
-            System.out.println("Compare_abc: all " +ARG_COUNT+ " arguments must be integers");
+            System.out.println("Compare_abc: arguments must be integers");
             System.exit(1);
         }
 

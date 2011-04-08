@@ -36,7 +36,7 @@ class Digits
     }
 
     private static void usage() {
-        System.out.println("usage: DigitName <digit>");
+        System.out.println("usage: Digits <digit>");
         System.out.println("       digit must be an integer digit between 0 and 9");
         System.exit(1);
     }
