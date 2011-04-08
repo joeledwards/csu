@@ -1,0 +1,80 @@
+1. "new" is a reserved word.
+
+2. This is a problem if "y" has not yet been declared.
+
+3. No output as the only statement which would generate output is commented out.
+
+4. 
+char c = 'A'  //assigns a character constant to 'c' 
+char c = 65   //casts the integer value 65 to a character before storing to 'c'.
+
+5. 
+r3d3 - Valid
+_12345 - Valid
+California - Valid
+U.S.A - Invalid because the . is a separator
+$value - Valid
+Private - Valid
+2number - Invalid because identifiers cannot begin with a digit
+X(3) - Invalid because parenthesis are disallowed within identifier names
+
+6.
+37 % 5 % 3 = 2
+37 % (5 % 3) = 1
+
+7.
+m = 42
+n = 41
+
+8.
+m = 4
+n = 1
+
+9.
+  a. float f = 345.6;  //No issue
+  b. int a = 35;  //No issue
+
+10. This will not compile correctly because because there is no guarantee that the variable 'n' has been initialized.
+
+11.
+  a. zero (0)
+  b. one (1)
+
+12.
+  a = 44  //The value is truncated to the least significant byte
+
+13.
+  0
+  throws ArrayIndexOutOfBoundsException
+
+14.
+  int i = 1;
+  while (i <= m) {
+      System.out.println(i);
+      i++;
+  }
+
+15.
+  a.
+    g = 25
+    c = 6
+  b.
+    g = 0
+    c = 5
+
+16.
+  a. x = 15
+  b. x = 35
+  c. x = 35
+
+17. half = 0
+
+18. 
+  int totalSeconds = 370;
+  int minutes = totalSeconds / 60;   // whole minutes
+  int seconds = totalSeconds % 60;   // remaining seconds
+
+19. a = 10
+
+
+
