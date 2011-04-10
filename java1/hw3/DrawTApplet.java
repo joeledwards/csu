@@ -5,6 +5,8 @@ import java.awt.Graphics;
 public class DrawTApplet
     extends Applet
 {
+    public static final long serialVersionUID = 1L;
+
     private static final int NEG = -1;
     private static final int POS = 1;
 
