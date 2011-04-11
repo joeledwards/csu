@@ -28,7 +28,7 @@ public class DrawRApp
     public static void main(String[] args) {
         JFrame frame = new JFrame("Draw R");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(400, 400));
+        frame.setPreferredSize(new Dimension(200, 250));
         frame.setMinimumSize(new Dimension(200,200));
 
         JApplet applet = new DrawRApp(); 

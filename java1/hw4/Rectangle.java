@@ -15,7 +15,7 @@ public class Rectangle
     public static final Color DEFAULT_COLOR = Color.BLACK;
 
     private static int lastID = 1;
-    public final long ID = lastID++;
+    public final int ID = lastID++;
 
     private int width = DEFAULT_WIDTH;
     private int length = DEFAULT_LENGTH;

@@ -20,5 +20,16 @@ class Test{
         //r2.ID = 99; will cause error
         System.out.println(r1.equals(r2));   //false
         System.out.println(r3.equals(r4));   //true
+
+        // Added by Joel Edwards - 2011/04/10
+
+        //r2.setWidth(-1); // generates DimensionOutOfRangeException
+        //r2.setWidth(9); // generates DimensionOutOfRangeException
+        //r2.setWidth(101); // generates DimensionOutOfRangeException
+        //r2.setLength(-1); // generates DimensionOutOfRangeException
+        //r2.setLength(9); // generates DimensionOutOfRangeException
+        //r2.setLength(101); // generates DimensionOutOfRangeException
+
+        //r2.ID = 13; // Compile error. Attempting to assign to final variable.
     }
 }
