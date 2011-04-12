@@ -10,8 +10,12 @@ public class DrawRApp
 
     Rectangle r1 = new Rectangle(50,75,Color.blue);
     Rectangle r2 = new Rectangle(60,80,Color.red);
+
     Rectangle r3 = new Rectangle();
-    Rectangle r4 = new Rectangle(100,10,Color.orange);
+    Rectangle r4 = new Rectangle(190,5,Color.orange);
+    Rectangle r5 = new Rectangle(100,11,Color.green);
+    Rectangle r6 = new Rectangle(11,93,Color.green);
+    Rectangle r7 = new Rectangle(11,98,Color.green);
 
     public void start() {
         repaint();
@@ -20,9 +24,13 @@ public class DrawRApp
     public void paint(Graphics g) {
         r1.drawAt(g,10,10);
         r2.drawAt(g,100,100);
+        g.drawLine(100,100,200,200);
+
         r3.drawAt(g,20, 150);
         r4.drawAt(g,5,190);
-        g.drawLine(100,100,200,200);
+        r5.drawAt(g,30,87);
+        r6.drawAt(g,62,10);
+        r7.drawAt(g,87,82);
     }
 
     public static void main(String[] args) {

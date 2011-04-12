@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.UUID;
         
 public class Rectangle
 {
@@ -23,44 +22,52 @@ public class Rectangle
 
     public Rectangle() {;}
 
-    public Rectangle(int width) throws DimensionOutOfRangeException {
+    public Rectangle(int width) {
         setWidth(width);
         setLength(width);
     }
 
-    public Rectangle(int width, int length) throws DimensionOutOfRangeException {
+    public Rectangle(int width, int length) {
         setWidth(width);
         setLength(length);
     }
 
-    public Rectangle(int width, int length, Color color) throws DimensionOutOfRangeException {
+    public Rectangle(int width, int length, Color color) {
         setWidth(width);
         setLength(length);
         this.color = color;
     }
 
-    public void setWidth(int width)
-        throws DimensionOutOfRangeException
-    {
-        if (width < MIN_WIDTH) {
-            throw new DimensionOutOfRangeException(String.format("Width is less than the minimum allowed (width=%d  MIN_WIDTH=%d)", width, MIN_WIDTH));
-        }
-        if (width > MAX_WIDTH) {
-            throw new DimensionOutOfRangeException(String.format("Width is greater than the maximum allowed (width=%d  MAX_WIDTH=%d)", width, MAX_WIDTH));
-        }
-        this.width = width;
+    public Rectangle clone() {
+        return new Rectangle(this.width, this.length, this.color);
     }
 
-    public void setLength(int length)
-        throws DimensionOutOfRangeException
-    {
+    public void setWidth(int width) {
+        if (width < MIN_WIDTH) {
+            this.width = MIN_WIDTH;
+        } 
+        else if (width > MAX_WIDTH) {
+            this.width = MAX_WIDTH;
+        } 
+        else {
+            this.width = width;
+        }
+    }
+
+    public void setLength(int length) {
         if (length < MIN_LENGTH) {
-            throw new DimensionOutOfRangeException(String.format("Length is less than the minimum allowed (length=%d  MIN_LENGTH=%d)", length, MIN_LENGTH));
+            this.length = MIN_LENGTH;
+        } 
+        else if (length > MAX_LENGTH) {
+            this.length = MAX_LENGTH;
+        } 
+        else {
+            this.length = length;
         }
-        if (length > MAX_LENGTH) {
-            throw new DimensionOutOfRangeException(String.format("Length is greater than the maximum allowed (length=%d  MIN_LENGTH=%d)", length, MAX_LENGTH));
-        }
-        this.length = length;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 
     public void drawAt(Graphics g, int x, int y) {
