@@ -30,7 +30,7 @@ public class DrawTResizeApplet
         frame.setVisible(true);
     }
 
-L   public void init() {
+    public void init() {
         // Here we handle the re-sizing of the Applet, and ignore all other
         // events returned by the ComponentListener
         this.addComponentListener(new ComponentListener() {
