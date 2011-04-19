@@ -5,8 +5,8 @@ JC = javac
 JAR = jar cvfm
 
 ACCOUNT_DIR = account
-MANIFEST = account.mf
-TARGET = account.jar
+MANIFEST = banking.mf
+TARGET = banking.jar
 
 .SUFFIXES: .java .class
 

@@ -42,8 +42,10 @@ public class BankAccount
         return stream;
     }
 
-    public boolean deposit(long amount, String source) {
-        stream.printf("%s [REQUEST]%d> Deposit %d\n", source, ID, amount);
+    public boolean deposit(long amount, String source) 
+    throws InterruptedException
+    {
+        stream.printf("%s [REQUEST] %d> Deposit %d\n", source, ID, amount);
         AccountOperation op = new AccountOperation();
         op.action = AccountAction.DEPOSIT;
         op.value = amount;
@@ -56,8 +58,10 @@ public class BankAccount
         return r.success;
     }
 
-    public boolean withdraw(long amount, String source) {
-        stream.printf("%s [REQUEST]%d> Withdraw %d", source, ID, amount);
+    public boolean withdraw(long amount, String source) 
+    throws InterruptedException
+    {
+        stream.printf("%s [REQUEST] %d> Withdraw %d\n", source, ID, amount);
         AccountOperation op = new AccountOperation();
         op.action = AccountAction.WITHDRAW;
         op.value = amount;
@@ -70,8 +74,10 @@ public class BankAccount
         return r.success;
     }
 
-    public long getBalance(String source) {
-        stream.printf("%s [REQUEST]%d> Balance statement.", source, ID);
+    public long getBalance(String source) 
+    throws InterruptedException
+    {
+        stream.printf("%s [REQUEST] %d> Balance statement.\n", source, ID);
         AccountOperation op = new AccountOperation();
         op.action = AccountAction.BALANCE;
         AccountResult r;
@@ -83,24 +89,26 @@ public class BankAccount
         return r.balance;
     }
 
-    public boolean transfer(long amount, Account target, String source) {
+    public boolean transfer(long amount, Account target, String source) 
+    throws InterruptedException
+    {
         boolean success = false;
-        stream.printf("%s [REQUEST]%d> Transfer %d to account %d", source, ID, amount, ((BankAccount)target).ID);
+        stream.printf("%s [REQUEST] %d> Transfer %d to account %d\n", source, ID, amount, ((BankAccount)target).ID);
         // Attempt to withdraw funds from our account
-        stream.printf("%s [TRANSFER]%d> Attempting withdrawl...", source, ID, amount, ((BankAccount)target).ID);
+        stream.printf("%s [TRANSFER] %d> Attempting withdrawl...\n", source, ID, amount, ((BankAccount)target).ID);
         if (this.withdraw(amount, source)) {
-            stream.printf("%s [TRANSFER]%d> Withdrawl succeeded. Attempting deposit to %d...", source, ID, ((BankAccount)target).ID);
+            stream.printf("%s [TRANSFER] %d> Withdrawl succeeded. Attempting deposit to %d...\n", source, ID, ((BankAccount)target).ID);
             // If we successfully withdraw, then attempt to deposit to the target
             if (!target.deposit(amount, source)) {
-                stream.printf("%s [TRANSFER]%d> Deposit to %d failed. Transfer cancelled.", source, ID, ((BankAccount)target).ID);
+                stream.printf("%s [TRANSFER] %d> Deposit to %d failed. Transfer cancelled.\n", source, ID, ((BankAccount)target).ID);
                 // If we cannot deposit to the target, we re-deposit to our own account
                 this.deposit(amount, source);
             } else {
-                stream.printf("%s [TRANSFER]%d> Deposit to %d succeeded. Transfer complete.", source, ID, ((BankAccount)target).ID);
+                stream.printf("%s [TRANSFER] %d> Deposit to %d succeeded. Transfer complete.\n", source, ID, ((BankAccount)target).ID);
                 success = true;
             }
         } else {
-            stream.printf("%s [TRANSFER]%d> Withdrawl failed. Transfer cancelled.", source, ID);
+            stream.printf("%s [TRANSFER] %d> Withdrawl failed. Transfer cancelled.\n", source, ID);
         }
         return success;
     }
@@ -123,11 +131,15 @@ public class BankAccount
      *              was performed successfully. The meaning of R.value is the
      *              amount of the modification (0 if the operation failed).
      */
-    public synchronized AccountResult performOperation(AccountOperation op, String source) {
+    public synchronized AccountResult performOperation(AccountOperation op, String source) 
+    throws InterruptedException
+    {
         return performOperationUnsync(op, source);
     }
 
-    public AccountResult performOperationUnsync(AccountOperation op, String source) {
+    public AccountResult performOperationUnsync(AccountOperation op, String source) 
+    throws InterruptedException
+    {
         AccountResult r = new AccountResult();
         r.action = op.action;
         switch (op.action) {
@@ -138,27 +150,27 @@ public class BankAccount
                 r.balance = balance;
                 break;
             case DEPOSIT:
-                stream.printf("%s [DEPOSIT]%d> Original balance is %d", source, ID, balance);
+                stream.printf("%s [DEPOSIT] %d> Original balance is %d\n", source, ID, balance);
                 sleep(delay);
-                stream.printf("%s [DEPOSIT]%d> Determining if deposit amount is valid...", source, ID);
+                stream.printf("%s [DEPOSIT] %d> Determining if deposit amount is valid...\n", source, ID);
                 if (op.value > 0) {
-                    stream.printf("%s [DEPOSIT]%d> Deposit amount is valid.", source, ID);
+                    stream.printf("%s [DEPOSIT] %d> Deposit amount is valid.\n", source, ID);
                     sleep(delay);
                     long new_balance = balance;
                     sleep(delay);
-                    stream.printf("%s [DEPOSIT]%d> Calculating new balance...", source, ID);
+                    stream.printf("%s [DEPOSIT] %d> Calculating new balance...\n", source, ID);
                     new_balance = new_balance + op.value;
                     sleep(delay);
-                    stream.printf("%s [DEPOSIT]%d> Balance calculated (%d + %d = %d).", source, ID, balance, op.value, new_balance);
+                    stream.printf("%s [DEPOSIT] %d> Balance calculated (%d + %d = %d).\n", source, ID, balance, op.value, new_balance);
                     sleep(delay);
-                    stream.printf("%s [DEPOSIT]%d> Setting new balance to %d...", source, ID, new_balance);
+                    stream.printf("%s [DEPOSIT] %d> Setting new balance to %d...\n", source, ID, new_balance);
                     sleep(delay);
                     balance = new_balance;
-                    stream.printf("%s [DEPOSIT]%d> Balance is now %d.", source, ID, new_balance);
+                    stream.printf("%s [DEPOSIT] %d> Balance is now %d.\n", source, ID, new_balance);
                     r.value = op.value;
                     r.success = true;
                 } else {
-                    stream.printf("%s [DEPOSIT]%d> Deposit amount is invalid.", source, ID);
+                    stream.printf("%s [DEPOSIT] %d> Deposit amount is invalid.\n", source, ID);
                     r.balance = balance;
                     r.value = 0;
                     r.success = false;
@@ -166,28 +178,28 @@ public class BankAccount
                 r.balance = balance;
                 break;
             case WITHDRAW:
-                stream.printf("%s [WITHDRAW]%d> Original balance is %d", source, ID, balance);
+                stream.printf("%s [WITHDRAW] %d> Original balance is %d\n", source, ID, balance);
                 sleep(delay);
-                stream.printf("%s [WITHDRAW]%d> Determining if funds are available...", source, ID);
+                stream.printf("%s [WITHDRAW] %d> Determining if funds are available...\n", source, ID);
                 sleep(delay);
                 if (balance >= op.value) {
-                    stream.printf("%s [WITHDRAW]%d> Funds are available.", source, ID);
+                    stream.printf("%s [WITHDRAW] %d> Funds are available.\n", source, ID);
                     sleep(delay);
                     long new_balance = balance;
                     sleep(delay);
-                    stream.printf("%s [WITHDRAW]%d> Calculating new balance...", source, ID);
+                    stream.printf("%s [WITHDRAW] %d> Calculating new balance...\n", source, ID);
                     new_balance = new_balance - op.value;
                     sleep(delay);
-                    stream.printf("%s [WITHDRAW]%d> Balance calculated (%d - %d = %d).", source, ID, balance, op.value, new_balance);
+                    stream.printf("%s [WITHDRAW] %d> Balance calculated (%d - %d = %d).\n", source, ID, balance, op.value, new_balance);
                     sleep(delay);
-                    stream.printf("%s [WITHDRAW]%d> Setting new balance to %d...", source, ID, new_balance);
+                    stream.printf("%s [WITHDRAW] %d> Setting new balance to %d...\n", source, ID, new_balance);
                     sleep(delay);
                     balance = new_balance;
-                    stream.printf("%s [WITHDRAW]%d> Balance is now %d.", source, ID, new_balance);
+                    stream.printf("%s [WITHDRAW] %d> Balance is now %d.\n", source, ID, new_balance);
                     r.success = true;
                     r.value = op.value;
                 } else {
-                    stream.printf("%s [WITHDRAW]%d> Insufficient funds.", source, ID);
+                    stream.printf("%s [WITHDRAW] %d> Insufficient funds.\n", source, ID);
                     r.value = 0;
                     r.success = false;
                 }
@@ -198,13 +210,11 @@ public class BankAccount
         return r;
     }
 
-    private static void sleep(int delay) {
+    private static void sleep(int delay) 
+    throws InterruptedException
+    {
         if (delay > 0) {
-            try {
-                Thread.sleep(delay);
-            } catch (InterruptedException e) {
-                ;
-            }
+            Thread.sleep(delay);
         }
     }
 }

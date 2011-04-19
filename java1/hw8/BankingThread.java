@@ -14,10 +14,16 @@ class BankingThread
     }
 
     public void run() {
-        primary.deposit(5000, getName());
-        secondary.deposit(2000, getName());
-        primary.withdraw(500, getName());
-        secondary.withdraw(250, getName());
-        primary.transfer(250, secondary, getName());
+        try {
+            primary.deposit(5000, getName());
+            secondary.deposit(2000, getName());
+            primary.withdraw(500, getName());
+            secondary.withdraw(250, getName());
+            primary.transfer(250, secondary, getName());
+        } catch (InterruptedException e) {;}
+    }
+
+    public void halt() {
+        this.interrupt();
     }
 }

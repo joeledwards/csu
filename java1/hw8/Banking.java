@@ -1,5 +1,7 @@
 import java.applet.Applet;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.PrintStream;
@@ -8,11 +10,14 @@ import javax.swing.BoxLayout;
 import javax.swing.JApplet;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 
 public class Banking
     extends JApplet
@@ -22,7 +27,7 @@ public class Banking
 
     private boolean         running = false;
     private BankDeposit     depositThread;
-    private QueueNotifier<String> notifyThread;
+    private QueueUpdater    notifyWorker;
 
     private JSpinner        threadCountSpinner;
     private JLabel          threadCountLabel;
@@ -34,97 +39,116 @@ public class Banking
     private JTextArea       viewArea;
     private JScrollPane     viewScroll;
 
-    private JButton         hNotifyButton;
+    private JButton         hCompleteButton;
 
     public void init() {
-        JPanel mainPanel        = new JPanel();
-        BoxLayout mainLayout    = new BoxLayout(mainPanel, BoxLayout.Y_AXIS);
+        getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-        JPanel threadPanel      = new JPanel();
-        BoxLayout threadLayout  = new BoxLayout(threadPanel, BoxLayout.X_AXIS);
+        JPanel oSpinPanel       = new JPanel(new BorderLayout());
+        JPanel spinPanel        = new JPanel(new GridLayout(2, 2));
         threadCountSpinner      = new JSpinner();
         threadCountLabel        = new JLabel("Thread Count: ");
-        threadPanel.add(threadCountSpinner);
-        threadPanel.add(threadCountLabel);
-        mainPanel.add(threadPanel);
+        spinPanel.add(threadCountLabel);
+        spinPanel.add(threadCountSpinner);
 
-        JPanel delayPanel       = new JPanel();
-        BoxLayout delayLayout   = new BoxLayout(delayPanel, BoxLayout.X_AXIS);
         delaySpinner            = new JSpinner();
         delayLabel              = new JLabel("Sub-transaction Delay: ");
-        delayPanel.add(delaySpinner);
-        delayPanel.add(delayLabel);
-        mainPanel.add(delayPanel);
+        spinPanel.add(delayLabel);
+        spinPanel.add(delaySpinner);
+        oSpinPanel.add(spinPanel, BorderLayout.WEST);
+        add(oSpinPanel);
 
         JPanel syncPanel        = new JPanel(new BorderLayout());
         syncCheckBox            = new JCheckBox("Synchronize");
         syncPanel.add(syncCheckBox, BorderLayout.WEST);
-        mainPanel.add(syncPanel);
+        add(syncPanel);
 
         JPanel controlPanel     = new JPanel(new BorderLayout());
         startButton             = new JButton("Start");
         cancelButton            = new JButton("Cancel");
         controlPanel.add(startButton, BorderLayout.WEST);
         controlPanel.add(cancelButton, BorderLayout.EAST);
-        mainPanel.add(controlPanel);
+        add(controlPanel);
 
         JPanel viewPanel        = new JPanel(new BorderLayout());
         viewArea                = new JTextArea();
         viewScroll              = new JScrollPane(viewArea);
         viewPanel.add(viewScroll, BorderLayout.CENTER);
-        mainPanel.add(viewPanel);
+        add(viewPanel);
 
-        hNotifyButton = new JButton();
-
-        getContentPane().add(mainPanel);
+        hCompleteButton = new JButton();
 
      // Configure widgets
         startButton.addActionListener(this);
         cancelButton.addActionListener(this);
-        threadCountSpinner.addChangeListener(new SpinDelegate(1, 26));
-        threadCountSpinner.setValue(2);
-        delaySpinner.addChangeListener(new SpinDelegate(0, Integer.MAX_VALUE));
-        delaySpinner.setValue(1000);
+        threadCountSpinner.setModel(new SpinnerNumberModel(2, 1, 26, 1));
+        delaySpinner.setModel(new SpinnerNumberModel(1000, 0, 60000,10));
         syncCheckBox.setSelected(false);
         viewArea.setEditable(false);
         viewArea.setColumns(200);
-        viewArea.setRows(20);
+        viewArea.setRows(100);
 
-        hNotifyButton.addActionListener(this);
+        hCompleteButton.addActionListener(this);
+
+        updateGui();
     }
 
     public void actionPerformed(ActionEvent evt) {
-        LinkedBlockingQueue<String> ioQueue = new LinkedBlockingQueue<String>(2048);
-        BankingPrinter printCore = new BankingPrinter(ioQueue);
-        PrintStream printer = new PrintStream(printCore);
         Object source = evt.getSource();
         if (source == startButton) {
+            LinkedBlockingQueue<String> ioQueue = new LinkedBlockingQueue<String>(2048);
+            BankingPrinter printCore = new BankingPrinter(ioQueue, false /* Mirror to STDOUT */);
+            PrintStream printer = new PrintStream(printCore, true /* Auto-Flush */);
             if (!running) {
                 viewArea.setText("");
                 depositThread = new BankDeposit((Integer)threadCountSpinner.getValue(),
                                                 (Integer)delaySpinner.getValue(),
                                                 syncCheckBox.isSelected(),
-                                                printer);
-                notifyThread = new QueueNotifier<String>(ioQueue, hNotifyButton);
+                                                printer,
+                                                hCompleteButton);
+                notifyWorker = new QueueUpdater(ioQueue, viewArea);
+                notifyWorker.execute();
+                depositThread.start();
+                running = true;
             }
             updateGui();
         } else if (source == cancelButton) {
-            notifyThread.halt("NOW");
-            updateGui();
-        } else if (source == hNotifyButton) {
-            String text;
-            while ((text = notifyThread.take()) != null) {
-                viewArea.append(text);
+            if (running) {
+                try {
+                    if (depositThread != null) {
+                        depositThread.halt();
+                        depositThread.join();
+                        depositThread = null;
+                    }
+                } catch (InterruptedException e) {;}
+                if (notifyWorker != null) {
+                    notifyWorker.halt();
+                    notifyWorker = null;
+                }
+                running = false;
             }
+            updateGui();
+        } else if (source == hCompleteButton) {
+            if (notifyWorker != null) {
+                notifyWorker.halt();
+                notifyWorker = null;
+            }
+            running = false;
             updateGui();
         }
     }
 
     public void updateGui() {
         if (running) {
+            threadCountSpinner.setEnabled(false);
+            delaySpinner.setEnabled(false);
+            syncCheckBox.setEnabled(false);
             startButton.setEnabled(false);
             cancelButton.setEnabled(true);
         } else {
+            threadCountSpinner.setEnabled(true);
+            delaySpinner.setEnabled(true);
+            syncCheckBox.setEnabled(true);
             startButton.setEnabled(true);
             cancelButton.setEnabled(false);
         }
@@ -144,6 +168,20 @@ public class Banking
         int threadCount = 2;
         int delay = 1000;
         boolean synchronize = false;
+        if (args.length == 0) {
+            JFrame frame = new JFrame("Banking");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setPreferredSize(new Dimension(500, 500));
+            frame.setMinimumSize(new Dimension(500,500));
+
+            JApplet applet = new Banking(); 
+            applet.init();
+            applet.start();
+            frame.add("Center", applet);
+            frame.pack();
+            frame.setVisible(true);
+            return;
+        }
         if (args.length > 3) {
             usage();
         }
@@ -174,5 +212,11 @@ public class Banking
                 usage();
             }
         }
+
+        BankDeposit depositThread = new BankDeposit(threadCount, delay, synchronize, System.out);
+        depositThread.start();
+        try {
+            depositThread.join();
+        } catch (InterruptedException e) {;}
     }
 }

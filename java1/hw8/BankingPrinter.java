@@ -1,20 +1,22 @@
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.StringBuffer;
-import java.util.ArrayList;
 import java.util.Queue;
+import java.util.Vector;
 
 public class BankingPrinter 
     extends OutputStream
 {
     private Queue<String> queue;
-    private ArrayList<Byte> buffer;
+    private Vector<Byte> buffer;
     private boolean closed = false;
+    private boolean mirrorToStdout = false;
 
-    public BankingPrinter(Queue<String> queue) {
+    public BankingPrinter(Queue<String> queue, boolean mirrorToStdout) {
         super();
         this.queue = queue;
-        this.buffer = new ArrayList<Byte>();
+        this.buffer = new Vector<Byte>();
+        this.mirrorToStdout = mirrorToStdout;
     }
 
     public void setQueue(Queue<String> queue) {
@@ -43,9 +45,12 @@ public class BankingPrinter
         for (int i=0; i < contents.length; i++) {
             contents[i] = buffer.get(i);
         }
-        if (!queue.offer(new String(contents))) {
+        String printString = new String(contents);
+        boolean queued = queue.offer(new String(contents));
+        if (!queued) {
             throw new IOException();
         }
+        System.out.print(printString);
         buffer.clear();
     }
 
