@@ -2,30 +2,20 @@
 
 JFLAGS = -g -Xlint
 JC = javac
-JAR = jar cvfm
-
-ACCOUNT_DIR = account
-MANIFEST = banking.mf
-TARGET = banking.jar
 
 .SUFFIXES: .java .class
 
 .java.class:
 	$(JC) $(JFLAGS) $<
 
-SOURCES = $(wildcard *.java) $(wildcard $(ACCOUNT_SIR)/*.java)
+SOURCES = $(wildcard *.java)
 
-DEP_CLASSES = $(SOURCES:.java=.class)
+CLASSES = $(SOURCES:.java=.class)
 
-ALL_CLASSES = *.class $(ACCOUNT_DIR)/*.class
+default: classes
 
-default: $(TARGET)
-
-$(TARGET): classes
-	$(JAR) $@ $(MANIFEST) $(ALL_CLASSES)
-
-classes: $(DEP_CLASSES:.java=.class)
+classes: $(CLASSES:.java=.class)
 
 clean:
-	$(RM) *.class $(ACCOUNT_DIR)/*.class $(TARGET)
+	$(RM) *.class
 
