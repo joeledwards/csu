@@ -19,7 +19,7 @@ public class WindChill
 {
     public static final long serialVersionUID = 1L;
 
-    private Scrollbar speedSlider = new Scrollbar(Scrollbar.HORIZONTAL, 10, 10, 5, 60);
+    private Scrollbar speedSlider = new Scrollbar(Scrollbar.HORIZONTAL, 10, 10, 5, 70);
     private Label speedLabel = new Label();
     private CheckboxGroup groupSpeed = new CheckboxGroup();
     private Checkbox radioSpeedM = new Checkbox("MPH (Miles per Hour)", groupSpeed, true);
@@ -31,7 +31,9 @@ public class WindChill
     private Checkbox radioTempF = new Checkbox("°F (Farenheit)", groupTemp, true);
     private Checkbox radioTempC = new Checkbox("°C (Celcius)", groupTemp, false);
 
-    private Label indexLabel = new Label("");
+    private CheckboxGroup groupEquation = new CheckboxGroup();
+    private Label indexLabelNOAA = new Label("");
+    private Label indexLabelLegacy = new Label("");
 
     public void init() {
         setLayout(new GridLayout(3,1));
@@ -42,8 +44,8 @@ public class WindChill
         speedPanel.add(speedSlider);
         speedPanel.add(speedLabel);
         speedPanel.add(radioSpeedM);
-        speedPanel.add(radioSpeedK);
-        speedPanel.setBackground(color(0.8, 0.8, 1.0));
+            speedPanel.add(radioSpeedK);
+            speedPanel.setBackground(color(0.8, 0.8, 1.0));
         add(speedPanel);
 
         Panel tempPanel = new Panel(new GridLayout(4,1));
@@ -54,9 +56,12 @@ public class WindChill
         tempPanel.setBackground(color(1.0, 0.5999999, 0.0));
         add(tempPanel);
 
-        Panel displayPanel = new Panel(new GridLayout(1,1));
-        displayPanel.add(indexLabel);
+        Panel displayPanel = new Panel(new GridLayout(2,1));
+        displayPanel.add(indexLabelNOAA);
+        displayPanel.add(indexLabelLegacy);
         displayPanel.setBackground(color(0.8, 1.0, 0.4));
+
+
 
         add(displayPanel);
 
@@ -82,12 +87,25 @@ public class WindChill
     private void updateIndex() {
         double windSpeed = speedSlider.getValue();
         double temperature = tempSlider.getValue();
-        double x = 0.303439 * Math.sqrt(windSpeed) - 0.0202886 * windSpeed;
-        double index = 91.9 - (91.4 - temperature) * (x + 0.474266);
+        double indexNOAA = 35.74 + (0.6215 * temperature) - (35.75  * (Math.pow(windSpeed, 0.16))) + (0.4275 * temperature * Math.pow(windSpeed, 0.16));
+        double indexLegacy = 91.9 - (91.4 - temperature) * ((0.303439 * Math.sqrt(windSpeed) - 0.0202886 * windSpeed) + 0.474266);
 
-        index = radioTempF.getState() ? index : (index - 32) * (5.0/9.0);
+        indexNOAA   = radioTempF.getState() ? indexNOAA   : (indexNOAA   - 32) * (5.0/9.0);
+        indexLegacy = radioTempF.getState() ? indexLegacy : (indexLegacy - 32) * (5.0/9.0);
+        String units = radioTempF.getState() ? "°F" : "°C";
 
-        indexLabel.setText("Windchill Index: " +(int)index);
+        String indexStringNOAA   = (int)indexNOAA + " " + units;
+        String indexStringLegacy = (int)indexLegacy + " " + units;
+
+        if ((windSpeed < 5) || (windSpeed > 60) || (temperature < -45) || (temperature > 40)) {
+            indexStringNOAA = "Outside of Range!";
+        }
+        if ((windSpeed < 5) || (windSpeed > 50) || (temperature < -50) || (temperature > 90)) {
+            indexStringLegacy = "Outside of Range!";
+        }
+
+        indexLabelNOAA.setText("NOAA Index:   " + indexStringNOAA);
+        indexLabelLegacy.setText("Legacy Index: " + indexStringLegacy);
     }
 
     private void reportWindSpeed() {
