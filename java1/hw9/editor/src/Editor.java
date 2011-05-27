@@ -1,6 +1,8 @@
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -8,14 +10,14 @@ import javax.swing.JTabbedPane;
 
 public class Editor
 extends JFrame
-implements ActionListener
+implements  ActionListener
 {
     public static void main(String[] args)
     {
         Editor window = new Editor("Editor");
-        window.setVisible(true);
         window.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         window.addWindowListener(new Terminator());
+        window.setVisible(true);
     }
 
  // Class Components
@@ -23,9 +25,8 @@ implements ActionListener
 
     private int currentTab = 0;
     private boolean isDoubleBuffered = false;
-    private ArrayList<Tab> tabs = new ArrayList<Tab>();
     
-    private JTabbedPane pane = new JTabbedPane();
+    private JTabbedPane tabs = new JTabbedPane();
 
     private JPanel buttonPanel = new JPanel(new BorderLayout());
     private JButton loadButton = new JButton("Load");
@@ -35,34 +36,60 @@ implements ActionListener
     {
         super(title);
         this.title = title;
+        setMinimumSize(new Dimension(400, 400));
 
         setLayout(new BorderLayout());
         buttonPanel.add(loadButton, BorderLayout.WEST);
         buttonPanel.add(saveButton, BorderLayout.EAST);
         add(buttonPanel, BorderLayout.SOUTH);
+        add(tabs, BorderLayout.CENTER);
+        newTab();
+        pack();
     }
 
-    private int newTab()
+    private void newTab(File file)
     {
-        tabIndex = currentTab++;
-        tabs.insertAt(tabIndex, new Tab(isDoubleBuffered));
-        pane.addTab(tabs.get(tabIndex);
-        return tabIndex;
+        String name = "Untitled";
+        Tab tab = null;
+        if (file == null) {
+            tab = new Tab(isDoubleBuffered);
+        } else {
+            tab = new Tab(file, isDoubleBuffered);
+            name = file.getName();
+        }
+        if (tabs.getTabCount() > 0) {
+            tabs.insertTab(name, null, tab, "", tabs.getSelectedIndex());
+        } else {
+            tabs.addTab(name, tab);
+        }
+    }
+
+    private void newTab() {
+        newTab(null);
     }
 
     private void closeTab()
     {
+        if (tabs.getTabCount() >= 1) {
+            tabs.removeTabAt(tabs.getSelectedIndex());
+        }
     }
 
-    private void open
+    private void open(File file)
+    {
+        Tab tab = (Tab)(tabs.getSelectedComponent());
+        if (tab.isFresh()) {
+            tab.setFile(file);
+        } else {
+            newTab(file);
+        }
+    }
+
+    private void save()
     {
     }
 
-    private void save
-    {
-    }
-
-    private void saveAs
+    private void saveAs()
     {
     }
 
@@ -76,7 +103,9 @@ implements ActionListener
  // Behavior:
  // - if tab is selected and fresh, open operation will take over this tab
  // - all other open operations create a new tab
-
+ // - when opening a file, compare to those that are open. If it is one of those,
+ //   give that file's tab focus
+ // - when a tab gains focus, update the currentTab value
 
  // Delegate Methods
     public void actionPerformed(ActionEvent evt)
