@@ -3,13 +3,24 @@
         A (very) simple text editor.
     </description>
     <property name="src" location="src"/>
+    <property name="resources" location="resources"/>
+
     <property name="build" location="build"/>
+    <property name="build_resources" location="build/resources"/>
     <property name="jar" location="editor.jar"/>
 
 <!--INIT-->
     <target name="init">
         <tstamp/>
         <mkdir dir="${build}"/>
+        <mkdir dir="${build_resources}"/>
+    </target>
+
+<!--DATA-->
+    <target name="data" depends="init" description="Add resources directory">
+        <copy todir="${build_resources}">
+            <fileset dir="${resources}"/>
+        </copy>
     </target>
 
 <!--COMPILE-->
@@ -20,7 +31,7 @@
     </target>
 
 <!--JAR-->
-    <target name="jar" depends="compile" description="generate the distribution" >
+    <target name="jar" depends="compile, data" description="generate the distribution" >
         <jar jarfile="${jar}" basedir="${build}">
             <manifest>
                 <attribute name="Main-Class" value="Editor"/>
