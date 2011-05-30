@@ -48,7 +48,7 @@ extends WindowAdapter
             }
         }
         if (close) {
-            window.hide();
+            window.setVisible(false);
             System.exit(0);
         }
     }
