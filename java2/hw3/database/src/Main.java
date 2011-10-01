@@ -15,7 +15,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Random;
@@ -24,9 +23,9 @@ import java.util.Set;
 public class Main
 {
     public static final String contacts[] = {
-        "Joel,Edwards,David,Rev.,,555.918.2106,mobile,555.853.2582,Work,555.823.0449,Home",
-        "Paul,Paulson,,,,555.471.2208,Work,555.143.3444,Mobile",
-        "Charles,Hutt,Charles,Ph.D,555.226.2818,Work,555.853.2266,Mobile"
+        "Rev.,Joel,David,Edwards,,555.918.2106,Mobile,555.853.2582,Work,555.823.0449,Home",
+        ",Paul,,Paulson,,555.471.2208,Work,555.143.3444,Mobile",
+        ",Charles,Robert,Hutt,Ph.D,555.226.2818,Work,555.853.2266,Mobile"
     };
 
     public static void main(String argv[])
@@ -34,8 +33,8 @@ public class Main
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet results = null;
-        System.out.printf("Drivers:\n");
-        //DriverManager.registerDriver("com.mysql.jdbc.Driver");
+        ResultSet ids = null;
+        String value = null;
 
         // This will load the MySQL driver, each DB has its own driver
         try {
@@ -45,25 +44,31 @@ public class Main
             System.exit(1);
         }
 
+        System.out.printf("Available Drivers:\n");
         Enumeration<Driver> drivers = DriverManager.getDrivers();
         Driver d = null;
         while (drivers.hasMoreElements()) {
             d = drivers.nextElement();
             System.out.printf("  %s\n", d.toString());
         }
+        System.out.print("\n");
 
         try {
-            // 1) Open connection to a MySQL database.
+            System.out.print("1.a) Connecting to the database...");
             conn = DriverManager.getConnection(
                    "jdbc:mysql://localhost/test?" + 
                    "user=test&password=test");
+            System.out.print("Done.\n");
 
-            // 1.5) Flush the database for each run.
+
+            System.out.print("1.b) Removing any test tables...");
             stmt = conn.prepareStatement(
                 "DROP TABLE IF EXISTS Contact, Phone;");
             stmt.execute();
+            System.out.print("Done.\n");
 
-            // 2) Create the first table.
+
+            System.out.print("2)   Creating the first table (Contact)...");
             stmt = conn.prepareStatement(
                 "CREATE TABLE IF NOT EXISTS Contact (" + 
                     "id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY," +
@@ -75,9 +80,12 @@ public class Main
                     "UNIQUE (first, last, middle)" +
                 ");");
             stmt.execute();
+            System.out.print("Done.\n");
 
-            // 3) Populate the first table.
-            HashMap<Integer,ArrayList<String[]>> numbers = new HashMap<Integer,ArrayList<String[]>>();
+
+            System.out.print("3)   Populating the first table (Contact)...");
+            HashMap<Integer,HashMap<String,String>> numbers;
+            numbers = new HashMap<Integer,HashMap<String,String>>();
             for (String info: contacts) {
                 String[] parts = info.split(",");
                 if (parts.length < 5) {
@@ -86,38 +94,50 @@ public class Main
 
                 int processed = 0;
                 stmt = conn.prepareStatement(
-                    "INSERT IGNORE " + 
-                    "INTO Contact(first, last, middle, prefix, suffix) " +
-                    "VALUES (?, ?, ?, ?, ?)");
+                    "INSERT " + 
+                    "INTO Contact(prefix, first, middle, last, suffix) " +
+                    "VALUES (?, ?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS);
                 for (int i = 0; i < 5; i++) {
-                    stmt.setString(i+1, parts[i].trim());
+                    value = parts[i].trim();
+                    stmt.setString(i+1, value);
                 }
+                stmt.executeUpdate();
+                ids = stmt.getGeneratedKeys();
+                ids.next();
+                int id = ids.getInt(1);
                 processed = 5;
-                int id = stmt.executeUpdate();
+                String number;
+                String desc;
 
                 // Pair the stored ID with the remaining values 
                 // from this contact.
-                ArrayList<String[]> num = new ArrayList<String[]>();
+                HashMap<String,String> phones;
+                phones = new HashMap<String,String>();
                 while ((processed + 2) <= parts.length) {
-                    num.add(new String[] {parts[processed], parts[processed+1]});
+                    number = parts[processed];
+                    desc = parts[processed+1];
+                    phones.put(number, desc);
                     processed += 2;
+
                 }
-                numbers.put(id, num);
+                numbers.put(id, phones);
             }
+            System.out.print("Done.\n");
 
 
-            // 4) Select all rows from the first table and display.
+            System.out.printf("4)   Checking the table's contents:\n");
             stmt = conn.prepareStatement("SELECT * FROM Contact;");
             results = stmt.executeQuery();
-
             int row = 0;
-            results.first();
-            System.out.printf("Fetch size: %d\n", results.getFetchSize());
-            while ((row = results.getRow()) > 0) {
-                for (int i = 0; i < 20; i++) {
+            while (results.next()) {
+                System.out.print("      >");
+                for (int i = 1; i < 20; i++) {
                     try {
-                        System.out.printf(" %s", results.getString(i));
-                        results.getString(i);
+                        value = results.getString(i);
+                        if (value.length() > 0) {
+                            System.out.printf(" %s", value);
+                        }
                     }
                     catch (SQLException ex) {
                         try {
@@ -129,35 +149,36 @@ public class Main
                     }
                 }
                 System.out.print("\n");
-                results.next();
             }
 
 
-            // 5) Update the first table.
+            System.out.print("5)   Updating the first table (Contact)...");
             stmt = conn.prepareStatement(
                 "INSERT IGNORE " +
-                "INTO Contact(first, last, middle, prefix, suffix) " +
-                "VALUES (?, ?, ?, ?, ?)");
-            stmt.setString(1, "Dilip");
-            stmt.setString(2, "Dedhia");
+                "INTO Contact(prefix, first, middle, last, suffix) " +
+                "VALUES (?, ?, ?, ?, ?)",
+                Statement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, "");
+            stmt.setString(2, "Lind");
             stmt.setString(3, "");
-            stmt.setString(4, "");
+            stmt.setString(4, "Gee");
             stmt.setString(5, "Ph.D");
             stmt.executeUpdate();
+            System.out.print("Done.\n");
 
 
-            // 6) Select all rows from the first table and display
-            //    in order to verify update was successful.
+            System.out.printf("6)   Checking the table's contents:\n");
             stmt = conn.prepareStatement("SELECT * FROM Contact;");
             results = stmt.executeQuery();
             row = 0;
-            results.first();
-            System.out.printf("Fetch size: %d\n", results.getFetchSize());
-            while ((row = results.getRow()) > 0) {
+            while (results.next()) {
+                System.out.print("      >");
                 for (int i = 0; i < 20; i++) {
                     try {
-                        System.out.printf(" %s", results.getString(i));
-                        results.getString(i);
+                        value = results.getString(i);
+                        if (value.length() > 0) {
+                            System.out.printf(" %s", value);
+                        }
                     }
                     catch (SQLException ex) {
                         try {
@@ -169,11 +190,10 @@ public class Main
                     }
                 }
                 System.out.print("\n");
-                results.next();
             }
 
 
-            // 7.a) Create second table.
+            System.out.print("7.a) Creating the second table (Phone)...");
             stmt = conn.prepareStatement(
                 "CREATE TABLE IF NOT EXISTS Phone (" + 
                     "number VARCHAR(64) NOT NULL PRIMARY KEY," +
@@ -181,25 +201,27 @@ public class Main
                     "contact_id INTEGER NOT NULL" +
                 ");");
             stmt.execute();
+            System.out.print("Done.\n");
 
-            // 7.b) Populate second table.
+            System.out.print("7.b) Populating the second table (Phone)...");
             Set<Integer> keys = numbers.keySet();
             for (Integer id: keys) {
-                ArrayList<String[]> numList = numbers.get(id);
-                for (String[] num: numList) {
+                HashMap<String,String> numList = numbers.get(id);
+                Set<String> types = numList.keySet();
+                for (String number: types) {
                     stmt = conn.prepareStatement(
                         "INSERT IGNORE " +
                         "INTO Phone(number, description, contact_id) " +
                         "VALUES (?, ?, ?)");
-                    stmt.setString(1, num[0]);
-                    stmt.setString(2, num[1]);
+                    stmt.setString(1, number);
+                    stmt.setString(2, numList.get(number));
                     stmt.setInt(3, id);
                     stmt.executeUpdate();
                 }
             }
+            System.out.print("Done.\n");
 
-            // 8) Select from both tables using join and 
-            //    display results.
+            System.out.print("8)   Verifying all contact info (join):\n");
             stmt = conn.prepareStatement(
                 "SELECT * " +
                 "FROM Contact " +
@@ -208,13 +230,15 @@ public class Main
             );
             results = stmt.executeQuery();
             row = 0;
-            results.first();
-            System.out.printf("Fetch size: %d\n", results.getFetchSize());
-            while ((row = results.getRow()) > 0) {
+            while (results.next()) {
+                System.out.print("      >");
+                row = results.getRow();
                 for (int i = 0; i < 20; i++) {
                     try {
-                        System.out.printf(" %s", results.getString(i));
-                        results.getString(i);
+                        value = results.getString(i);
+                        if (value.length() > 0) {
+                            System.out.printf(" %s", value);
+                        }
                     }
                     catch (SQLException ex) {
                         try {
@@ -226,7 +250,6 @@ public class Main
                     }
                 }
                 System.out.print("\n");
-                results.next();
             }
 
             conn.close();
