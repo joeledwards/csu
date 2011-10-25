@@ -1,16 +1,34 @@
-<project name="shopping" default="jar" basedir=".">
+<project name="shopping" default="war" basedir=".">
     <description>
-        Assembles a JSP shopping cart system.
+        Assembles a servlet shopping cart system.
     </description>
+    <property file="tomcat.properties"/>
+    <property name="dev.home" location="/home/joel/csu/java2/hw4/shopping"/>
+    <!--property name="tomcat.home" location="/usr/share/tomcat6"/-->
+    <!--property name="tomcat.lib" location="/usr/share/tomcat6/lib"/-->
+    <property name="ant-contrib.dir" location="/home/joel/dev/webapps"/>
+    <property name="webapp.name" value="shopping"/>
+    <property name="webapp.dist" location="dist"/>
+    <property name="webapp.war.name" value="${webapp.name}.war"/>
+    <property name="webapp.war.path" location="${webapp.dist}/${webapp.war.name}"/>
     <property name="src" location="src"/>
-    <property name="build" location="build"/>
+    <property name="classes" location="web/WEB-INF/classes"/>
+    <property name="lib" location="web/WEB-INF/lib"/>
     <property name="libs" location="libs"/>
-    <property name="jar" location="shopping.jar"/>
+
+    <taskdef file="${ant-contrib.dir}/tomcatTasks.properties">
+        <classpath>
+            <pathelement path="${tomcat.home}/lib/catalina-ant.jar"/>
+        </classpath>
+    </taskdef>
 
     <path id="compile.class.path">
         <pathelement location="$(src)"/>
         <fileset dir="${libs}">
             <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="${tomcat.lib}">
+            <include name="servlet-api.jar"/>
         </fileset>
     </path>
 
@@ -23,39 +41,96 @@
 <!--INIT-->
     <target name="init">
         <tstamp/>
-        <mkdir dir="${build}"/>
+        <mkdir dir="${webapp.dist}"/>
+        <mkdir dir="${classes}"/>
+        <mkdir dir="${lib}"/>
+    </target>
+
+<!--LIBRARIES-->
+    <target name="libraries" depends="init" description="Add librares">
+        <copy todir="${lib}">
+            <fileset dir="${libs}">
+                <include name="**/*.jar"/>
+            </fileset>
+        </copy>
     </target>
 
 <!--COMPILE-->
-    <target name="compile" depends="init" description="Compile the source">
-        <javac srcdir="${src}" destdir="${build}" 
+    <target name="compile" depends="libraries" description="Compile the source">
+        <javac srcdir="${src}" destdir="${classes}" 
                debug="true" includeantruntime="no">
             <classpath refid="compile.class.path"/>
         </javac>
     </target>
 
-<!--LIBRARIES-->
-    <target name="libraries" depends="init" description="Add librares">
-        <unjar dest="${build}">
-            <fileset dir="${libs}">
-                <include name="**/*.jar"/>
-            </fileset>
-        </unjar>
-        <delete dir="${build}/META-INF"/>
+<!--WAR-->
+    <target name="war" depends="compile"
+            description="Assemble the WAR file">
+        <war destfile="${webapp.war.path}" webxml="web/WEB-INF/web.xml">
+            <fileset dir="web"/>
+            <lib dir="web/WEB-INF/lib"/>
+            <classes dir="web/WEB-INF/classes"/>
+        </war>
     </target>
 
-<!--JAR-->
-    <target name="jar" depends="libraries, compile" description="generate the distribution" >
-        <jar jarfile="${jar}" basedir="${build}">
-            <manifest>
-                <attribute name="Main-Class" value="Main"/>
-            </manifest>
-        </jar>
+<!--DEPLOY-->
+    <target name="deploy" depends="war"
+            description="Install application to Tomcat">
+        <deploy url="${tomcat.manager.url}"
+                username="${tomcat.username}"
+                password="${tomcat.password}"
+                path="/${webapp.name}"
+                war="file:${webapp.war.path}"/>
+    </target>
+
+<!--RELOAD-->
+    <target name="reload" description="Start Tomcat application">
+        <reload url="${tomcat.manager.url}"
+                username="${tomcat.username}"
+                password="${tomcat.password}"
+                path="/${webapp.name}"/>
+    </target>
+
+<!--REMOVE-->
+    <target name="remove" description="Remove Tomcat application">
+        <remove url="${tomcat.manager.url}"
+                username="${tomcat.username}"
+                password="${tomcat.password}"
+                path="/${webapp.name}"/>
+    </target>
+
+<!--RE-DEPLOY-->
+    <target name="redeploy" depends="remove,deploy"
+            description="Re-install application to Tomcat">
+    </target>
+
+<!--START-->
+    <target name="start" description="Start Tomcat application">
+        <start url="${tomcat.manager.url}"
+                username="${tomcat.username}"
+                password="${tomcat.password}"
+                path="/${webapp.name}"/>
+    </target>
+
+<!--STOP-->
+    <target name="stop" description="Stop Tomcat application">
+        <stop url="${tomcat.manager.url}"
+                username="${tomcat.username}"
+                password="${tomcat.password}"
+                path="/${webapp.name}"/>
+    </target>
+
+<!--LIST-->
+    <target name="list" description="List Tomcat applications">
+        <list url="${tomcat.manager.url}"
+                username="${tomcat.username}"
+                password="${tomcat.password}"/>
     </target>
 
 <!--CLEAN-->
     <target name="clean" description="clean up" >
-        <delete dir="${build}"/>
-        <delete file="${jar}"/>
+        <delete dir="${webapp.dist}"/>
+        <delete dir="${classes}"/>
+        <delete dir="${lib}"/>
     </target>
 </project>
