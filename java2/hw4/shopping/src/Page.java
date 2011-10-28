@@ -2,16 +2,18 @@ import java.io.PrintWriter;
 
 public class Page
 {
-    protected String head = "<html>\n" +
-    "<head>\n" +
-    "</head>\n" +
-    "<body>";
+    protected String head = null;
+    protected String body = null;
+    protected String tail = null;
 
-    protected String body = "";
     private boolean written = false;
 
-    protected String tail = "</body>\n" +
-    "</html>";
+    public Page(String title)
+    {
+        head =  "<html><head><title>" +title+ "</title></head><body>";
+        body = "";
+        tail =  "</body></html>";
+    }
 
     public boolean write(PrintWriter out)
     {

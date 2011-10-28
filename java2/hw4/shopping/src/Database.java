@@ -12,45 +12,51 @@ import java.util.Set;
 
 public class Database
 {
-    protected Connection conn = null;
-    protected PreparedStatement stmt = null;
+    protected Connection connection = null;
+    protected Statement statement = null;
 
     public Database()
     {
         try {
             Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException ex) {
-            //System.out.printf("Could not load MySQL driver.", ex);
             System.exit(1);
         }
 
         try {
-            conn = DriverManager.getConnection(
-                   "jdbc:mysql://localhost/shopping?" + 
-                   "user=shopping&password=shopping");
+            connection = DriverManager.getConnection(
+                "jdbc:mysql://localhost/cart?" + 
+                "user=cart&password=cart");
         } catch (SQLException ex) {
             System.exit(1);
         }
     }
 
-    // - User
-    // - Inventory
-    // - Item
-    // - Cart
-    // - CartItem
-
-    public boolean add()
+    public ResultSet getInventory()
+        throws SQLException
     {
-        try {
-            stmt = conn.prepareStatement(
-                "INSERT " + 
-                "INTO CartItems(cart_id, item_id, quantity) " +
-                "VALUES (?, ?, ?)",
-                Statement.RETURN_GENERATED_KEYS);
-        } catch (SQLException ex) {
-            return false;
+        return getInventory(null);
+    }
+
+    public ResultSet getInventory(String search)
+        throws SQLException
+    {
+        ResultSet results = null;
+        String searchString = "";
+
+        if ((search != null) && (search.length() > 0)) {
+            searchString = " WHERE name LIKE '%" +search+ "%' ";
         }
-        return true;
+
+        statement = connection.createStatement();
+        statement.executeQuery("SELECT id,name,description,price " +
+                               "FROM Inventory " +
+                                searchString +
+                               "ORDER BY name");
+        results = statement.getResultSet();
+
+        return results;
     }
 }
 
