@@ -42,18 +42,21 @@ a)  A is not in the same subnet as its gateway.
 
 b)  There are a number of ways the problem could be solved. 
     It depends on the nature of the problem. PC A will require
-    a reconfiguration, but what to change depends on the network layout.
+    a reconfiguration, but what to change depends on the actual
+    configurations of its hosting subnet.
 
-    i) So long as the netmask and gateway are correct for the physical 
+    1) So long as the netmask and gateway are correct for the physical 
     connection of PC A, its IP should be modified such that its new
     IP is in the following group:
     192.20.20.35 - 192.20.20.46, 192.20.20.33 
    
-    ii) If the subnet is actually larger (192.20.20.0/26) than the 
+    2) If the subnet is actually larger (192.20.20.0/26) than the 
     configuration designates, then adjusting the subnet mask could
     resolve the issue.
 
-    iii) So long as the netmask is correct, and the IP is correct for PC A's
+    3) So long as the netmask is correct, and the IP is correct for PC A's
     network, the gateway should be modified. The gateway's IP will be in
-    the range 192.20.20.18 - 1912.20.20.30
+    the range 192.20.20.18 - 1912.20.20.30 if this is the case.
+
+
  

@@ -2,7 +2,7 @@
     172.16.0.0/12   (172.16.0.0  - 172.31.255.255)
     192.168.0.0/16  (192.168.0.0 - 192.168.255.255)
 
-2)  
+2)
 
 a)  Confirm that the domain name "xyz.com" is not owned. 
     Register the domain name.

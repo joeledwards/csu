@@ -10,6 +10,7 @@ public class Page
 
     public Page(String title)
     {
+        // Basic parts of the webpage separated to simplify writing process
         head =  "<html><head><title>" +title+ "</title></head><body>";
         body = "";
         tail =  "</body></html>";
@@ -22,6 +23,7 @@ public class Page
             return false;
         }
 
+        // Write out each part of the web page
         out.println(head);
         out.println(body);
         out.println(tail);
@@ -30,6 +32,7 @@ public class Page
     }
 
     public void append(String content) {
+        // Add 'content' to the body of the HTML document
         body += content;
     }
 }

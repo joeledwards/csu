@@ -16,21 +16,17 @@ public class Database
     protected Statement statement = null;
 
     public Database()
+        throws ClassNotFoundException,
+               SQLException
     {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException ex) {
-            System.exit(1);
-        }
+        // Load JDBC database drivers
+        Class.forName("com.mysql.jdbc.Driver");
+        Class.forName("org.sqlite.JDBC");
 
-        try {
-            connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost/cart?" + 
-                "user=cart&password=cart");
-        } catch (SQLException ex) {
-            System.exit(1);
-        }
+        connection = DriverManager.getConnection(
+            "jdbc:mysql://localhost/cart?" + 
+            "user=cart&password=cart");
+        connection.setAutoCommit(false);
     }
 
     public ResultSet getInventory()
@@ -46,15 +42,31 @@ public class Database
         String searchString = "";
 
         if ((search != null) && (search.length() > 0)) {
-            searchString = " WHERE name LIKE '%" +search+ "%' ";
-        }
+            /*
+            PreparedStatement statement = connection.prepareStatment(
+                                             "SELECT id,name,description,price " +
+                                             "FROM Inventory " +
+                                             " WHERE name LIKE ? " +
+                                             "ORDER BY name");
+            statement.setString(1, "%"+search+"%");
+            results = statement.executeQuery();
+            */
 
-        statement = connection.createStatement();
-        statement.executeQuery("SELECT id,name,description,price " +
-                               "FROM Inventory " +
-                                searchString +
-                               "ORDER BY name");
-        results = statement.getResultSet();
+            Statement statement = connection.createStatement();
+            statement.executeQuery(
+                "SELECT id,name,description,price " +
+                "FROM Inventory " +
+                " WHERE name LIKE '%" +search+ "%' " +
+                "ORDER BY name");
+            results = statement.getResultSet();
+        } else {
+            Statement statement = connection.createStatement();
+            statement.executeQuery(
+                "SELECT id,name,description,price " +
+                "FROM Inventory " +
+                "ORDER BY name");
+            results = statement.getResultSet();
+        }
 
         return results;
     }
