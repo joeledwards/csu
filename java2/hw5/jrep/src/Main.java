@@ -22,7 +22,6 @@ public class Main
         parser = new OptionParser() {
             {
                 accepts("c", "Print number of matches in each file instead of printing each matching line");
-                accepts("e", "Extended search pattern support");
                 accepts("h", "Prints this help message");
                 accepts("i", "Ignore case");
                 accepts("r", "Recrusively search directories");
@@ -38,7 +37,6 @@ public class Main
         // Assemble list of files
 
         boolean countsOnly = options.has("c");
-        boolean extended   = options.has("e");
         boolean ignoreCase = options.has("i");
         boolean recursive  = options.has("r");
         boolean fileNames  = true;
@@ -61,7 +59,7 @@ public class Main
         }
 
         try {
-            Regex reg = new Regex(searchText, System.out, ignoreCase, extended);
+            Regex reg = new Regex(searchText, System.out, ignoreCase);
             reg.setPrintCountsOnly(countsOnly);
             reg.setPrintFileNames(files.size() > 1);
             reg.setRecursive(recursive);

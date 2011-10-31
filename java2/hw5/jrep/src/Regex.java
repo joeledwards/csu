@@ -43,8 +43,7 @@ public class Regex
      */
     public Regex(String patternText,
                  PrintStream outputStream,
-                 boolean ignoreCase,
-                 boolean extended)
+                 boolean ignoreCase)
         throws PatternSyntaxException
     {
         int flags = 0; 
