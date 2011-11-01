@@ -1,8 +1,19 @@
-1) Design IP Addressing Scheme 
-   (12 subnets, each with the same submask, all from the
-    same class C address space 192.10.10.0/24)
+1)  Design IP Addressing Scheme   ( the solution can be implemented in various ways)
 
-a)  192.10.10.1
+You have been hired as a consultant by the company  to design / implement IP addressing for their enterprise network.
+
+The company has four locations:- Palo Alto , San Francisco , San Diego and Irvine . At the corporate office in Palo Alto , they have  7 story building. Each floor will be on a separate sub-network.  The branch offices in San Francisco and  San Diego need 2 sub-networks each and the Irvine office needs only 1 sub-network.
+
+The goal is to use the maximum possible machines per subnet and use the same subnet mask.
+
+The IP address to use is – 192.10.10.x
+
+The gateways/router assignments for the clients will be  the 1st available address on each subnet that can be used for a LAN interface.
+
+
+a)  For each subnet, specify the IP address for the gateway/router
+
+    192.10.10.1
     192.10.10.17
     192.10.10.33
     192.10.10.49
@@ -15,7 +26,9 @@ a)  192.10.10.1
     192.10.10.161
     192.10.10.177
 
-b)  192.10.10.2   - 192.10.10.14
+b)  Calculate IP addresses ranges that can be used to assign to hosts/machines on each network.
+
+    192.10.10.2   - 192.10.10.14
     192.10.10.18  - 192.10.10.30
     192.10.10.34  - 192.10.10.46
     192.10.10.50  - 192.10.10.62
@@ -28,19 +41,33 @@ b)  192.10.10.2   - 192.10.10.14
     192.10.10.162 - 192.10.10.174
     192.10.10.178 - 192.10.10.190
 
-c)  255.255.255.240
+c)  What will be the subnet mask used for all the machines in this design ?
+
+    255.255.255.240
 
 
-2) Why can't A and B communicate?
+
+
+2) Two users on the network are having problems in communicating. i.e.
+User on PCA is not able to communicate with User on PCB. You have been asked to troubleshoot & provide assistance. 
+
+Following is the IP configuration for the 2 machines:
+
 
 PC: A                   B
 IP: 192.20.20.17        192.20.20.150
 NM: 255.255.255.240     255.255.255.240
 GW: 192.20.20.34        192.20.20.156
 
-a)  A is not in the same subnet as its gateway.
 
-b)  There are a number of ways the problem could be solved. 
+a)  What is the problem ?
+
+    A is not in the same subnet as its gateway.
+
+
+b)  How do you suggest that the problem can be solved ?
+
+    There are a number of ways the problem could be solved. 
     It depends on the nature of the problem. PC A will require
     a reconfiguration, but what to change depends on the actual
     configurations of its hosting subnet.
