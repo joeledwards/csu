@@ -28,7 +28,7 @@ public class Main
             }
         };
 
-        programName = "jrep.jar";
+        programName = "preg.jar";
         OptionSet options = parser.parse(argv);
 
         if (options.has("h")) {
@@ -40,31 +40,41 @@ public class Main
         boolean ignoreCase = options.has("i");
         boolean recursive  = options.has("r");
         boolean fileNames  = true;
+        boolean stdinMode  = false;
 
         List<String> args = options.nonOptionArguments();
 
-        if (args.size() < 2) {
-            usage();
+        if (args.size() < 1) {
+            usage("No pattern supplied");
         }
-
         String searchText = args.get(0);
+        ArrayList<File> files = null;
 
-        ArrayList<File> files = new ArrayList<File>(256);
-        for (int i = 1; i < args.size(); i++) {
-            files.add(new File(args.get(i)));
+        if (args.size() < 2) {
+            stdinMode = true;
         }
+        else {
+            files = new ArrayList<File>(256);
+            for (int i = 1; i < args.size(); i++) {
+                files.add(new File(args.get(i)));
+            }
 
-        if ((files.size() <= 1) && (!files.get(0).isDirectory())) {
-            fileNames = false;
+            if ((files.size() <= 1) && (!files.get(0).isDirectory())) {
+                fileNames = false;
+            }
         }
 
         try {
             Regex reg = new Regex(searchText, System.out, ignoreCase);
-            reg.setPrintCountsOnly(countsOnly);
-            reg.setPrintFileNames(files.size() > 1);
-            reg.setRecursive(recursive);
-
-            reg.searchFiles(files);
+            if (stdinMode) {
+                reg.searchStream(System.in);
+            } 
+            else {
+                reg.setPrintCountsOnly(countsOnly);
+                reg.setPrintFileNames(files.size() > 1);
+                reg.setRecursive(recursive);
+                reg.searchFiles(files);
+            }
         }
         catch (PatternSyntaxException ex) {
             usage("Invalid Search Pattern Syntax");

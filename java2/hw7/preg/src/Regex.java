@@ -3,6 +3,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,8 +28,6 @@ import java.util.regex.PatternSyntaxException;
  */
 public class Regex
 {
-    private String newLine = System.getProperty("line.separator"); 
-
     private PrintStream printStream = null;
     private RegexCore core = null;
     private Pattern pattern = null;
@@ -129,6 +128,11 @@ public class Regex
         return recursive;
     }
 
+    public boolean searchStream(InputStream inputStream)
+    {
+        return true;
+    }
+
     /**
      * Checks every line in a file against the pattern, and prints out those which
      * match the pattern.
@@ -165,35 +169,35 @@ public class Regex
                                             new DataInputStream(
                                                 new FileInputStream(file))));
 
-            String fileNameString = "";
-            if (printFileNames) {
-                // Filename prefix for matched lines if enabled
-                fileNameString = file.getName()+ ":";
-            }
-
             PipedOutputStream outputPipe = new PipedOutputStream();
+            PipedInputStream inputPipe = new PipedInputStream(outputPipe);
+            PrintStream outputStream = new PrintStream(outputPipe, true);
+            String fileName = printFileNames ? file.getName() : null;
             RegexCore core = new RegexCore(pattern,
-                                           outputPipe,
-                                           printStream, 
-                                           file.getName(),
+                                           inputPipe,
+                                           System.out, 
+                                           fileName,
                                            printCountsOnly);
             Thread coreThread = new Thread(core);
             coreThread.start();
 
             // Read every line from the file and pipe it to the core
-            String line = reader.readLine() + newLine;
+            String line = reader.readLine();
             byte[] bytes = null;
             while (line != null) {
-                printStream.printf("READ LINE: " +line);
-                bytes = line.getBytes();
                 // Write the line to the core for processing
-                outputPipe.write(bytes, 0, bytes.length);
+                outputStream.println(line);
+                outputPipe.flush();
                 line = reader.readLine();
             }
+            outputPipe.close();
+            inputPipe.close();
+
             try {
                 coreThread.join();
-            } catch (InterruptedException exJoin) {
-                ;
+            }
+            catch (InterruptedException ex) {
+                printStream.printf("Input was interrupted.\n", file.getName());
             }
         }
         catch (FileNotFoundException ex) {
