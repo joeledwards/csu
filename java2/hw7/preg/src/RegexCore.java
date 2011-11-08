@@ -15,6 +15,14 @@ import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+/**
+ * @author      Joel Edwards
+ * @version     1.0
+ *
+ * The RegexCore class matches a pattern against lines read from a stream,
+ * and prints the matched lines or a summary on another stream.
+ *
+ */
 public class RegexCore
     implements Runnable
 {
@@ -29,10 +37,24 @@ public class RegexCore
     private boolean finalStage = false;
     private String fileString = "";
 
+    /**
+     * Creates a new instance of the RegexCore class.
+     *
+     * @param pattern           the pattern to be used for matching
+     * @param inputStream       the InputStream from which lines will be read
+     * @param printStream       the PrintStream to which output should be sent
+     * @param prefix            an optional prefix to print before each matched 
+     *                          line. (null or empty String for none)
+     * @param printCountsOnly   true to print only the number of lines matched,
+     *                          otherwise false.
+     *
+     * @throws IOException      if a reader could not be attached to inputStream.
+     *
+     */
     public RegexCore(Pattern pattern,
                      InputStream inputStream,
                      PrintStream printStream,
-                     String fileName,
+                     String prefix,
                      boolean printCountsOnly)
         throws IOException
     {
@@ -40,14 +62,18 @@ public class RegexCore
         this.inputStream = inputStream;
         this.printStream = printStream;
         this.printCountsOnly = printCountsOnly;
-        if ((fileName != null) && (fileName.length() > 0)) {
-            this.fileString = fileName + ": ";
+        if ((prefix != null) && (prefix.length() > 0)) {
+            this.fileString = prefix + ": ";
         }
 
         reader = new BufferedReader(
                      new InputStreamReader(inputStream));
     }
 
+    /**
+     * Implements the Runnable interface's run() method.
+     * This is where the "magic" happens.
+     */
     public void run()
     {
         int matchCount = 0;

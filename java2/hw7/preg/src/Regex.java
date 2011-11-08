@@ -128,55 +128,30 @@ public class Regex
         return recursive;
     }
 
-    public boolean searchStream(InputStream inputStream)
-    {
-        return true;
-    }
-
     /**
-     * Checks every line in a file against the pattern, and prints out those which
-     * match the pattern.
+     * Checks every line read from the stream against the pattern, and prints
+     * out those which match the pattern.
      *
-     * @param file  The file to test for matches.
+     * @param inputStream   The input stream from which to read lines.
+     * @param fileName      Prefix each result with this file name.
+     *                      No prefix if null or empty.
      *
      * @return  True if at least one match was found, otherwise false.
      */
-    public boolean searchFile(File file)
+    public int searchStream(InputStream inputStream,
+                            String prefix)
     {
-        if (file == null) {
-            return false;
-        }
-
         int matchCount = 0;
         try {
-            // If this is a directory, pass its contents onto the
-            // searchFiles(Collection<File>) method, which will in turn
-            // pass each file back here for processing, following all
-            // directories until we have encountered every file in the
-            // tree.
-            if (file.isDirectory() && recursive) {
-                File[] fileArray = file.listFiles();
-                ArrayList<File> files = new ArrayList(fileArray.length);
-                for (File subFile: fileArray) {
-                    files.add(subFile);
-                }
-                return searchFiles(files);
-            }
-
-            // Open the file for reading.
             BufferedReader reader = new BufferedReader(
-                                        new InputStreamReader(
-                                            new DataInputStream(
-                                                new FileInputStream(file))));
-
+                                        new InputStreamReader(inputStream));
             PipedOutputStream outputPipe = new PipedOutputStream();
             PipedInputStream inputPipe = new PipedInputStream(outputPipe);
             PrintStream outputStream = new PrintStream(outputPipe, true);
-            String fileName = printFileNames ? file.getName() : null;
             RegexCore core = new RegexCore(pattern,
                                            inputPipe,
                                            System.out, 
-                                           fileName,
+                                           prefix,
                                            printCountsOnly);
             Thread coreThread = new Thread(core);
             coreThread.start();
@@ -197,8 +172,50 @@ public class Regex
                 coreThread.join();
             }
             catch (InterruptedException ex) {
-                printStream.printf("Input was interrupted.\n", file.getName());
+                printStream.printf("Input was interrupted.\n");
             }
+        }
+        catch (IOException ex) {
+            ;
+        }
+        return matchCount;
+    }
+
+    /**
+     * Checks every line in a file against the pattern, and prints out those which
+     * match the pattern.
+     *
+     * @param file  The file to test for matches.
+     *
+     * @return  True if at least one match was found, otherwise false.
+     */
+    public int searchFile(File file)
+    {
+        if (file == null) {
+            return 0;
+        }
+
+        int matchCount = 0;
+        try {
+            // If this is a directory, pass its contents onto the
+            // searchFiles(Collection<File>) method, which will in turn
+            // pass each file back here for processing, following all
+            // directories until we have encountered every file in the
+            // tree.
+            if (file.isDirectory() && recursive) {
+                File[] fileArray = file.listFiles();
+                ArrayList<File> files = new ArrayList(fileArray.length);
+                for (File subFile: fileArray) {
+                    files.add(subFile);
+                }
+                return searchFiles(files);
+            }
+
+            // Pass opened file stream to searchStream method
+            matchCount = searchStream(new DataInputStream(
+                                          new FileInputStream(file)),
+                                      printFileNames ? file.getName() : null);
+
         }
         catch (FileNotFoundException ex) {
             printStream.printf("%s: file not found\n", file.getName());
@@ -206,7 +223,7 @@ public class Regex
         catch (IOException ex) {
             printStream.printf("%s: could not read from file\n", file.getName());
         }
-        return matchCount > 0;
+        return matchCount;
     }
 
     /**
@@ -217,7 +234,7 @@ public class Regex
      *
      * @return  True if at least one match was found, otherwise false.
      */
-    public boolean searchFile(String fileName)
+    public int searchFile(String fileName)
     {
         return searchFile(new File(fileName));
     }
@@ -230,11 +247,11 @@ public class Regex
      *
      * @return  True if at least one match was found, otherwise false.
      */
-    public boolean searchFiles(Collection<File> files)
+    public int searchFiles(Collection<File> files)
     {
-        boolean result = false;
+        int result = 0;
         for (File file: files) {
-            result = searchFile(file) || result;
+            result += searchFile(file);
         }
         return result;
     }
@@ -247,11 +264,11 @@ public class Regex
      *
      * @return  True if at least one match was found, otherwise false.
      */
-    public boolean searchFilesByName(Collection<String> fileNames)
+    public int searchFilesByName(Collection<String> fileNames)
     {
-        boolean result = false;
+        int result = 0;
         for (String fileName: fileNames) {
-            result = searchFile(fileName) || result;
+            result += searchFile(fileName);
         }
         return result;
     }

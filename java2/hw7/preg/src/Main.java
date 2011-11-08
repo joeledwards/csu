@@ -66,11 +66,11 @@ public class Main
 
         try {
             Regex reg = new Regex(searchText, System.out, ignoreCase);
+            reg.setPrintCountsOnly(countsOnly);
             if (stdinMode) {
-                reg.searchStream(System.in);
+                reg.searchStream(System.in, null);
             } 
             else {
-                reg.setPrintCountsOnly(countsOnly);
                 reg.setPrintFileNames(files.size() > 1);
                 reg.setRecursive(recursive);
                 reg.searchFiles(files);
