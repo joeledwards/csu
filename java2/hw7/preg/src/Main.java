@@ -83,7 +83,9 @@ public class Main
 
     public static void usage()
     {
-        System.out.println("Usage: " +programName+ " [Options] <search-pattern> <files1> [files2]...\n");
+        System.out.println("Usage: " +programName+ " [Options] <search-pattern> [files1 [files2]]...\n");
+        System.out.println("                 If only the pattern is supplied (no files) then");
+        System.out.println("                 the program will read from standard input.\n");
         try {
             parser.printHelpOn(System.out);
         }
