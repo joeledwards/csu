@@ -24,14 +24,18 @@ public class Main
     public static void main(String argv[])
     {
         int port = 24642;
+        int temperature = 50;
+        boolean verbose = false;
         String address = null;
         Runnable core = null;
 
         parser = new OptionParser() {
             {
                 accepts("h", "Prints this help message.");
-                accepts("p", "Connect to this port as a client. Bind to this port as a server.");
-                accepts("s", "Connect to this server as a client.");
+                accepts("p", "Connect to this port as a client. Bind to this port as a server.").withRequiredArg().ofType(Integer.class);
+                accepts("s", "Connect to this server as a client.").withRequiredArg().ofType(String.class);
+                accepts("t", "Start at this temperature (only affects the server).").withRequiredArg().ofType(Integer.class);
+                accepts("v", "Set to verbose mode.");
             }
         };
 
@@ -42,13 +46,18 @@ public class Main
             usage();
         }
         if (options.has("p")) {
-            port = Integer.parseInt((String)options.valueOf("p"));
+            port = (Integer)options.valueOf("p");
         }
-
+        if (options.has("t")) {
+            temperature = (Integer)options.valueOf("t");
+        }
+        if (options.has("v")) {
+            verbose = true;
+        }
         if (options.has("s")) {
             address = (String)options.valueOf("s");
             try {
-                core = new Client(port, address);
+                core = new Client(address, port, verbose);
             } catch (IOException ex) {
                 System.out.println("Failed to create client.");
                 System.exit(1);
@@ -56,7 +65,7 @@ public class Main
         }
         else {
             try {
-                core = new Server(port);
+                core = new Server(port, verbose, temperature);
             } catch (ClassNotFoundException ex) {
                 System.out.println("Class not found.");
                 System.exit(1);
