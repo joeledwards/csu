@@ -16,6 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -38,6 +39,10 @@ public class Window
     private JPanel buttonPanel = new JPanel(new BorderLayout());
     private JButton printButton = new JButton("Print");
 
+    private JPanel leftPanel = new JPanel(new BorderLayout());
+    private JPanel orderPanel = new JPanel(new BorderLayout());
+    private JButton defaultButton = new JButton("Default");
+    private JButton sortButton = new JButton("Sort");
     private JPanel countPanel = new JPanel(new BorderLayout());
     private JButton refreshButton = new JButton("Refresh");
     private JSpinner barCountSpinner = new JSpinner();
@@ -61,9 +66,13 @@ public class Window
         setJMenuBar(menuBar);
     
         setLayout(new BorderLayout());
-        buttonPanel.add(countPanel, BorderLayout.WEST);
+        buttonPanel.add(leftPanel,   BorderLayout.WEST);
         buttonPanel.add(printButton, BorderLayout.EAST);
 
+        leftPanel.add(orderPanel, BorderLayout.NORTH);
+        leftPanel.add(countPanel, BorderLayout.SOUTH);
+        orderPanel.add(defaultButton, BorderLayout.WEST);
+        orderPanel.add(sortButton, BorderLayout.CENTER);
         countPanel.add(refreshButton, BorderLayout.WEST);
         countPanel.add(barCountSpinner, BorderLayout.CENTER);
 
@@ -74,10 +83,12 @@ public class Window
         barCountSpinner.setModel(new SpinnerNumberModel(6, 5, 32, 1));
         terminator = new Terminator(this);
         this.addWindowListener(terminator);
+        defaultButton.addActionListener(this);
+        sortButton.addActionListener(this);
         refreshButton.addActionListener(this);
         printButton.addActionListener(this); 
 
-        refresh();
+        setDefault();
     }
 
     public int getBarCount() {
@@ -104,6 +115,16 @@ public class Window
     {
         // re-generate bars
         display.refresh();
+    }
+
+    private void setDefault()
+    {
+        display.setDefault();
+    }
+
+    private void sortRectangles()
+    {
+        display.sortRectangles();
     }
 
     private void save()
@@ -144,6 +165,12 @@ public class Window
         if (source == refreshButton) {
             refresh();
         }
+        else if (source == defaultButton) {
+            setDefault();
+        }
+        else if (source == sortButton) {
+            sortRectangles();
+        }
         else if (source == printButton) {
             print();
         }
@@ -172,6 +199,11 @@ public class Window
             }
             catch (Exception ex) {
                 System.out.printf("Print Error: %s\n", ex);
+                JOptionPane.showMessageDialog(this,
+                    "An error occured while attempting to print:\n" +
+                    "Printing Error: " + ex,
+                    "Printing Error",
+                    JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -196,6 +228,10 @@ public class Window
                 quit();
             } else if (keyCode == KeyEvent.VK_R) {
                 refresh();
+            } else if (keyCode == KeyEvent.VK_P) {
+                print();
+            } else if (keyCode == KeyEvent.VK_D) {
+                setDefault();
             }
         }
 

@@ -12,8 +12,9 @@ import java.awt.print.Printable;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.Random;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.event.ChangeEvent;
 import javax.swing.JDialog;
@@ -52,6 +53,29 @@ public class Display
             }
             public void componentShown(ComponentEvent e) { ; }
         });
+    }
+
+    public void sortRectangles()
+    {
+        Collections.sort(rectangles);
+        repaint();
+    }
+
+    public void setDefault()
+    {
+        width = getWidth();
+        height = getHeight();
+
+        int barCount = 5;
+        barWidth = (width - ((barCount - 1) * barSpace)) / barCount;
+
+        rectangles.clear();
+        rectangles.add(new Rectangle(barWidth,  5 * height / 12, Color.red));
+        rectangles.add(new Rectangle(barWidth,  7 * height / 12, Color.green));
+        rectangles.add(new Rectangle(barWidth, 12 * height / 12, Color.orange));
+        rectangles.add(new Rectangle(barWidth,  6 * height / 12, Color.blue));
+        rectangles.add(new Rectangle(barWidth,  4 * height / 12, Color.yellow));
+        repaint();
     }
 
     public void refresh()

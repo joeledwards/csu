@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.Graphics;
         
 public class Rectangle
+    implements Comparable<Rectangle>
 {
     public static final int MIN_WIDTH = 1;
     public static final int MAX_WIDTH = 2048;
@@ -77,7 +78,8 @@ public class Rectangle
         g.setColor(lastColor);
     }
 
-    public boolean equals(Rectangle other) {
+    public boolean equals(Object obj) {
+        Rectangle other = (Rectangle)obj;
         if (width != other.width)
             return false;
         if (height != other.height)
@@ -85,6 +87,14 @@ public class Rectangle
         if (!(color.equals(other.color)))
             return false;
         return true;
+    }
+
+    public int compareTo(Rectangle other) {
+        if (height > other.height)
+            return 1;
+        if (height < other.height)
+            return -1;
+        return 0;
     }
 
     public int computeArea() {
