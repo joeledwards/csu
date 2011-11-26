@@ -190,13 +190,9 @@ public class Window
  // Print
     public void print()
     {
-        Display oldDisplay = display;
-        display = oldDisplay.clone();
-        remove(oldDisplay);
-        add(display, BorderLayout.CENTER);
-        pack();
+        Display printDisplay = display.clone();
         PrinterJob job = PrinterJob.getPrinterJob();
-        job.setPrintable((Printable)oldDisplay);
+        job.setPrintable((Printable)printDisplay);
         if (job.printDialog()) {
             try {
                 job.print();
