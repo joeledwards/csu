@@ -26,6 +26,8 @@ public class Display
     extends JPanel
     implements Printable
 {
+    private boolean isNew = true;
+
     private Window parent = null;
     private File file = null;
     private boolean fresh = true;
@@ -49,10 +51,32 @@ public class Display
             public void componentHidden(ComponentEvent e) { ; }
             public void componentMoved(ComponentEvent e) { ; }
             public void componentResized(ComponentEvent e) {
-                ((Display)e.getComponent()).refresh();
+                if (isNew) {
+                    isNew = false;
+                } else {
+                    ((Display)e.getComponent()).refresh();
+                }
             }
             public void componentShown(ComponentEvent e) { ; }
         });
+    }
+
+    public Display clone()
+    {
+        Display display  = new Display(this.parent);
+        display.file     = this.file;
+        display.fresh    = this.fresh;
+        display.saved    = this.saved;
+        display.barSpace = this.barSpace;
+        display.rand     = new Random();
+        display.backgroundColor = this.backgroundColor;
+        display.height   = this.height;
+        display.width    = this.width;
+        display.barWidth = this.barWidth;
+        for (Rectangle rect: this.rectangles) {
+            display.rectangles.add(rect.clone());
+        }
+        return display;
     }
 
     public void sortRectangles()
@@ -93,6 +117,9 @@ public class Display
         int minHeight = height / 8;
         int maxHeight = height - (height / 32);
         int heightDiff = maxHeight - minHeight;
+        if (heightDiff < 1) {
+            heightDiff = 1;
+        }
 
         barWidth = (width - ((barCount - 1) * barSpace)) / barCount;
 
@@ -119,6 +146,8 @@ public class Display
 
     public int print(Graphics g, PageFormat pf, int pageIndex)
     {
+        if (pageIndex > 0)
+            return Printable.NO_SUCH_PAGE;
         generate(g);
         return Printable.PAGE_EXISTS;
     }

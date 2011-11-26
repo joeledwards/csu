@@ -48,7 +48,7 @@
     <target name="jar" depends="libraries, compile" description="generate the distribution" >
         <jar jarfile="${jar}" basedir="${build}">
             <manifest>
-                <attribute name="Main-Class" value="Main"/>
+                <attribute name="Main-Class" value="Window"/>
             </manifest>
         </jar>
     </target>

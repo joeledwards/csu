@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +11,7 @@ import java.io.File;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.JApplet;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -28,7 +30,6 @@ public class Window
 
  // Class Components
     private String clipboard = null;
-    private String title;
     private File defaultSaveDir = new File(".");
     private Terminator terminator = null;
 
@@ -53,19 +54,18 @@ public class Window
  // File Menu Items
     private JMenuItem saveFileMenuItem   = new JMenuItem("Save",    KeyEvent.VK_S);
     private JMenuItem saveAsFileMenuItem = new JMenuItem("Save As", KeyEvent.VK_A);
-    private JMenuItem printMenuItem      = new JMenuItem("Print",   KeyEvent.VK_P);
+    private JMenuItem printFileMenuItem  = new JMenuItem("Print",   KeyEvent.VK_P);
     private JMenuItem quitFileMenuItem   = new JMenuItem("Quit",    KeyEvent.VK_Q);
 
     public Window(String title)
     {
         super(title);
-        this.title = title;
-        setMinimumSize(new Dimension(400, 400));
 
+        getContentPane().setLayout(new BorderLayout());
         createMenu();
         setJMenuBar(menuBar);
     
-        setLayout(new BorderLayout());
+
         buttonPanel.add(leftPanel,   BorderLayout.WEST);
         buttonPanel.add(printButton, BorderLayout.EAST);
 
@@ -81,8 +81,7 @@ public class Window
         pack();
 
         barCountSpinner.setModel(new SpinnerNumberModel(6, 5, 32, 1));
-        terminator = new Terminator(this);
-        this.addWindowListener(terminator);
+
         defaultButton.addActionListener(this);
         sortButton.addActionListener(this);
         refreshButton.addActionListener(this);
@@ -102,11 +101,11 @@ public class Window
         menuBar.add(fileMenu);
         fileMenu.add(saveFileMenuItem);
         fileMenu.add(saveAsFileMenuItem);
-        fileMenu.add(printMenuItem);
+        fileMenu.add(printFileMenuItem);
         fileMenu.add(quitFileMenuItem);
         saveFileMenuItem.addActionListener(this);
         saveAsFileMenuItem.addActionListener(this);
-        printMenuItem.addActionListener(this);
+        printFileMenuItem.addActionListener(this);
         quitFileMenuItem.addActionListener(this);
     }
 
@@ -155,7 +154,7 @@ public class Window
 
  // Quit the Application
     private void quit() {
-        terminator.windowClosing(null);
+        System.exit(0);
     }
 
  // ActionListener
@@ -174,7 +173,7 @@ public class Window
         else if (source == printButton) {
             print();
         }
-        else if (source == printMenuItem) {
+        else if (source == printFileMenuItem) {
             print();
         }
         else if (source == saveFileMenuItem) {
@@ -191,8 +190,13 @@ public class Window
  // Print
     public void print()
     {
+        Display oldDisplay = display;
+        display = oldDisplay.clone();
+        remove(oldDisplay);
+        add(display, BorderLayout.CENTER);
+        pack();
         PrinterJob job = PrinterJob.getPrinterJob();
-        job.setPrintable((Printable)display);
+        job.setPrintable((Printable)oldDisplay);
         if (job.printDialog()) {
             try {
                 job.print();
@@ -243,5 +247,14 @@ public class Window
                 saveAs();
             }
         }
+    }
+
+    public static void main(String[] args)
+    {
+        Window window = new Window("Print Test");
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setMinimumSize(new Dimension(400, 400));
+        window.setPreferredSize(new Dimension(400, 400));
+        window.setVisible(true);
     }
 }
