@@ -1,0 +1,25 @@
+body {
+    color: black;
+    background-color: white;
+    margin-bottom: 4ex;
+    font-family: Garamond, Times New Roman, serif;
+}
+h1 {
+    margin-bottom: 2ex;
+}
+h1 {
+    color: navy;
+}
+span.fw {
+    color: blue;
+    font-size: 130%;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+p {
+    color: black;
+    font-size: 12pt;
+    margin-bottom: 6ex;
+    line-height: 150%;
+}
+
