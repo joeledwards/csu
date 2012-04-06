@@ -29,7 +29,7 @@ public class BankingPrinter
 
     private void testClosed() throws IOException {
         if (closed) {
-            throw new IOException("BankingPrinter has been closd()");
+            throw new IOException("BankingPrinter has been closed()");
         }
     }
 

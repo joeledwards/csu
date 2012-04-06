@@ -301,9 +301,11 @@ implements ActionListener, ChangeListener, KeyListener
         if (index >= 0) {
             Tab tab = (Tab)tabs.getComponentAt(index);
             if (tab.isFresh()) {
+                selectAllEditMenuItem.setEnabled(false);
                 saveFileMenuItem.setEnabled(false);
                 saveAsFileMenuItem.setEnabled(false);
             } else {
+                selectAllEditMenuItem.setEnabled(true);
                 saveAsFileMenuItem.setEnabled(true);
                 if (tab.isSaved()) {
                     saveFileMenuItem.setEnabled(false);
