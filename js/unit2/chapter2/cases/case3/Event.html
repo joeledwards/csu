@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang = "en" dir="ltr">
+<head>
+    <title>Cost Calculator</title>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+</head>
+<body>
+    <script type="text/javascript">
+    <!-- HIDE FROM INCOMPATIBLE BROWSERS
+
+    /* <![CDATA[ */
+
+    var eventName = "Big Wedding";
+    var venueCapacity = 500;
+
+    var guestCost = 175;
+    var guestCount = 130;
+    var guestTotal = guestCost * guestCount;
+
+    var limousineCost = 100;
+    var limousineCount = 5;
+    var limousineTotal = limousineCost * limousineCount;
+
+    var liveMusic = false;
+    var liveMusicCost = 500;
+    var liveMusicTotal = liveMusic ? liveMusicCost : 0;
+
+    var flowers = true;
+    var flowersCost = 300;
+    var flowersTotal = flowers ? flowersCost : 0;
+
+    var openBar = true;
+    var openBarCost = 30;
+    var openBarTotal = openBar ? (openBarCost * guestCount) : 0;
+
+    var eventTotal = guestTotal + limousineTotal + liveMusicTotal + flowersTotal + openBarTotal;
+
+    document.write("<h1>" +eventName+ "</h1>");
+    document.write("<p>");
+
+    document.write("<em>" +guestCount+ "</em> guest" +((guestCount == 1) ? "" : "s")+ " at $" +guestCost+ " per guest: <strong>$" +guestTotal+ "</strong>" +((guestCount > venueCapacity) ? " (Venue seats " +venueCapacity+ ". You have invited too many guests.)" : "")+ "<br />");
+    document.write("<em>"  +limousineCount+ "</em> limousine" +((limousineCount == 1) ? "" : "s")+ " at $" +limousineCost+ " per limousine: <strong>$" +limousineTotal+ "</strong><br />");
+    document.write("Live music at $" +liveMusicCost+ " <em>" +(liveMusic ? "included" : "declined")+ "</em>: <strong>$" +liveMusicTotal+ "</strong><br />");
+    document.write("Flowers at $" +flowersCost+ " <em>" +(flowers ? "included" : "declined")+ "</em>: <strong>$" +flowersTotal+ "</strong><br />");
+    document.write("Open bar at $" +openBarCost+ " per guest <em>" +(openBar ? "included" : "declined")+ "</em>: <strong>$" +openBarTotal+ "</strong><br />");
+    document.write("<br />");
+    document.write("Event Total: <strong>$" +eventTotal+ "</strong><br />");
+
+    document.write("</p>");
+    /* ]]> */
+
+    // STOP HIDING FOMR INCOMPATIBLE BROWSERS -->
+    </script>
+</body>
+</html>
