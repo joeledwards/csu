@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang = "en" dir="ltr">
+<head>
+    <title>Target Heart Rate</title>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+</head>
+<body>
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    function getAge() {
+        return document.rateform.age.value;
+    }
+
+    function calcHeartRate() {
+        var maxHeartRate = 220 - getAge();
+        var minTargetHeartRate = maxHeartRate * .5;
+        var maxTargetHeartRate = maxHeartRate * .85;
+        document.rateform.display.value = Math.round(minTargetHeartRate)+ " to " +Math.round(maxTargetHeartRate)+ " beats per minute";
+    }
+    /* ]]> */
+    </script>
+
+    <h1>Target Heart Rate</h1>
+    <form name="rateform" action="">
+        <p>
+        <input name="age" value="" />
+        <input type="button" value="Calculate" onclick="calcHeartRate();" /> <br />
+        <input name="display" value="" size="40" />
+        </p>
+    </form>
+</body>
+</html>

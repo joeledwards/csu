@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang = "en" dir="ltr">
+<head>
+    <title>Gas Mileage</title>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+</head>
+<body>
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    function calcMPG() {
+        var startMiles = document.mpgform.startMiles.value;
+        var endMiles = document.mpgform.endMiles.value;
+        var gallons = document.mpgform.gallonsUsed.value;
+        var result = NaN;
+        if (isNaN(startMiles) || isNaN(endMiles) || isNaN(gallons)) {
+            window.alert("You must enter numeric values for all fields.");
+        } else {
+            // The following if statement can be removed to handle negative travel
+            //if (endMiles >= startMiles) {
+            if (gallons > 0) {
+                result = (endMiles - startMiles) / gallons;
+            }
+            //}
+        }
+        document.mpgform.milesPerGallon.value = result.toFixed(4);
+    }
+    /* ]]> */
+    </script>
+
+    <h1>Gas Mileage</h1>
+    <form name="mpgform" action="">
+        <p>
+        Starting Mileage&nbsp;<input name="startMiles" value="0" onchange="calcMPG();" /> <br />
+        Ending Mileage&nbsp;<input name="endMiles" value="0" onchange="calcMPG();" /> <br />
+        Gallons Used&nbsp;<input name="gallonsUsed" value="0" onchange="calcMPG();" /> <br />
+        Miles per Gallon&nbsp;<input name="milesPerGallon" value="0" />
+        </p>
+    </form>
+</body>
+</html>
