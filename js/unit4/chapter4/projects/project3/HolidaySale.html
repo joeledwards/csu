@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang = "en" dir="ltr">
+<head>
+    <title>Holiday Sale</title>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    window.defaultStatus = "Don's Department Store";
+    function changingStatus() {
+        var msg1 = "From now until January 1!";
+        var msg2 = "Prices slashed by 30%!";
+        window.status = (window.status == msg1) ? msg2 : msg1;
+        var disp = document.advert.display;
+        disp.value = (disp.value == msg1) ? msg2 : msg1;
+    }
+    /* ]]> */
+    </script>
+</head>
+<body onload="begin=setInterval('changingStatus()', 2000);">
+    <h1>Don's Department Store</h1>
+    <h2>Holidy Sale</h2>
+    <form action="" name="advert">
+        <p><input name="display" value="Prices slashed by 30%!" size="60"</p>
+    </form>
+</body>
+</html>

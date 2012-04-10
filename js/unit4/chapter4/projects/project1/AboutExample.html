@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang = "en" dir="ltr">
+<head>
+    <title>About Dialog Box Example</title>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+</head>
+<body>
+    <form action="">
+        <p><input type="button" value="About this JavaScript Program" onclick="showAbout();" /></p>
+    </form>
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    function showAbout() {
+        var aboutUrl = "About.html";
+
+        var winWidth = 300;
+        var winHeight = 100;
+        var xPos = (screen.width / 2) - (winWidth / 2);
+        var yPos = (screen.height / 2) - (winHeight / 2);
+
+        var argString = ""
+        argString += "left=" +xPos+ ",";
+        argString += "top=" +yPos+ ",";
+        argString += "height=" +winHeight+ ",";
+        argString += "width=" +winWidth;
+
+        window.open(aboutUrl, "AboutWindow", argString);
+    }
+    /* ]]> */
+    </script>
+</body>
+</html>
