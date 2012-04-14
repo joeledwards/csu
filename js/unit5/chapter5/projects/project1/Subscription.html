@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Gosselin Gazette Subscription Form</title>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+    <link rel="stylesheet" href="../js_styles.css" type="text/css" />
+
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    var formIndex = 0;
+    var magIndex = 31;
+
+    function getForm() {
+        return document.forms[formIndex];
+    }
+
+    function checkForNumber(fieldValue) {
+        var numberCheck = isNaN(fieldValue);
+        if (numberCheck == true) {
+            window.alert("You must enter a numeric value!");
+            return false;
+        }
+    }
+
+    function confirmPassword() {
+        var form = getForm();
+        if (form.password_confirm.value != form.password.value) {
+            window.alert("You did not enter the same password!");
+            form.password.focus();
+        }
+    }
+
+    function noDelivery() {
+        var form = getForm();
+        for (var i=0; i < form.delivery.length; ++i) {
+            if (form.delivery[i].checked == true) {
+                form.delivery[i].checked = false;
+            }
+        }
+    }
+
+    function noSunday() {
+        var form = getForm();
+        for (var i=0; i < form.sunday.length; ++i) {
+            if (form.sunday[i].checked == true) {
+                form.sunday[i].checked = false;
+            }
+        }
+    }
+
+    function sameShippingInfo(same) {
+        var form = getForm();
+        form.name_shipping.value    = same ? form.name_billing.value    : "";
+        form.address_shipping.value = same ? form.address_billing.value : "";
+        form.city_shipping.value    = same ? form.city_billing.value    : "";
+        form.state_shipping.value   = same ? form.state_billing.value   : "";
+        form.zip_shipping.value     = same ? form.zip_billing.value     : "";
+    }
+
+    function addMagazine() {
+        var form = getForm();
+        if (form.elements[magIndex].value == "") {
+            window.alert("You must enter a magazine name.");
+        }
+        else {
+            // Remove the "hint" line from the selection if we have one magazine
+            if (form.magazines.options[0] && form.magazines.options[0].value == "none") {
+                form.magazines.options[0] = null;
+            }
+            var magazine = new Option();
+            magazine.text = form.elements[magIndex].value;
+            magazine.value = form.elements[magIndex].value;
+            nextItem = form.magazines.length;
+            form.magazines.options[nextItem] = magazine;
+            form.elements[magIndex].value = "";
+        }
+    }
+
+    function deleteMagazine() {
+        var form = getForm();
+        var selectedItem = form.magazines.selectedIndex;
+        if (selectedItem == -1) {
+            window.alert("You must select a magazine name in the list.");
+        }
+        else {
+            form.magazines.remove(selectedItem);
+        }
+    }
+
+    function changeMagazine() {
+        var form = getForm();
+        var selectedItem = form.magazines.selectedIndex;
+        if (selectedItem == -1) {
+            window.alert("You must selecte a magazine name in the list.");
+        }
+        else {
+            form.magazines.options[selectedItem].value = form.elements[magIndex].value;
+            form.magazines.options[selectedItem].text = form.elements[magIndex].value;
+        }
+    }
+
+    function confirmSubmit() {
+        var form = getForm();
+        for (var i = 0; i < 16; i++) {
+            if (i == 5) continue;
+            if (form.elements[i].value == "") {
+                var category = "your billing information";
+                if (i > 13) {
+                    category = "a password";
+                } else if (i > 10) {
+                    category = "your telephone number";
+                } else if (i > 5) {
+                    category = "your shipping information";
+                }
+                window.alert("You must enter " +category+ ".");
+                return false;
+            }
+        }
+
+        var deliverySelected = false;
+        for (var i=0; i<8; ++i) {
+            if (form.delivery[i].checked == true) {
+                deliverySelected = true;
+                break;
+            }
+        }
+
+        for (var j=0; j<2; ++j) {
+            if (form.sunday[j].checked == true) {
+                deliverySelected = true;
+                break;
+            }
+        }
+
+        if (deliverySelected != true) {
+            window.alert("You must select a delivery rate option.");
+            return false;
+        }
+
+        for (var k=0; k < form.magazines.length; ++k) {
+            form.magazines.options[k].selected = true;
+        }
+
+        return true;
+    }
+
+    function confirmReset() {
+        return window.confirm("Are you sure you want to reset the form?");
+    }
+    /* ]]> */
+    </script>
+</head>
+<body>
+    <h1>Gosselin Gazette Subscription Form</h1>
+    <h2>Customer Information</h2>
+    <form action="../FormProcessor.html" method="get" enctype="application/x-www-form-urlencoded" onsubmit="return confirmSubmit();" onreset="return confirmReset();">
+        <table border="0">
+            <tr>
+                <td valign="top">
+                    <h3>Billing Information</h3>
+                    <p>Name<br />
+                       <input type="text" name="name_billing" size="50" /></p>
+                    <p>Address<br />
+                       <input type="text" name="address_billing" size="50" /></p>
+                    <p>City, State, Zip<br />
+                       <input type="text" name="city_billing" size="30" />
+                       <input type="text" name="state_billing" size="2" maxlength="2" />
+                       <input type="text" name="zip_billing" size="10" maxlength="10" onchange="return checkForNumber(this.value);" />
+                    </p>
+                    <p>
+                        <input type="checkbox" onclick="sameShippingInfo(this.checked);" />Same shipping information
+                    </p>
+                </td>
+                <td valign="top">
+                    <h3>Shipping Information</h3>
+                    <p>Name<br />
+                       <input type="text" name="name_shipping" size="50" /></p>
+                    <p>Address<br />
+                       <input type="text" name="address_shipping" size="50" /></p>
+                    <p>City, State, Zip<br />
+                       <input type="text" name="city_shipping" size="30" />
+                       <input type="text" name="state_shipping" size="2" maxlength="2" />
+                       <input type="text" name="zip_shipping" size="10" maxlength="10" onchange="return checkForNumber(this.value);" />
+                    </p>
+                </td>
+            </tr>
+        </table>
+
+        <p>Telephone</p>
+        <p>
+            (<input type="text" name="area"     size="3" maxlength="3" onchange="return checkForNumber(this.value);" />)
+             <input type="text" name="exchange" size="3" maxlength="3" onchange="return checkForNumber(this.value);" /> -
+             <input type="text" name="phone"    size="4" maxlength="4" onchange="return checkForNumber(this.value);" />
+        </p>
+
+        <p>Enter a password that you can use to manage your subscription online:</p>
+        <p><input type="password" name="password" size="50" /></p>
+        <p>Type the password again to confirm it.</p>
+        <p><input type="password" name="password_confirm" size="50" onblur="confirmPassword();" /></p>
+
+        <h3>Delivery Rates</h3>
+        <table border="0">
+            <colgroup align="left" width="100" />
+            <colgroup span="4" align="center" width="100" />
+            <tr>
+                <th>&nbsp;</th>
+                <th>4 weeks</th>
+                <th>13 weeks</th>
+                <th>26 weeks</th>
+                <th>52 weeks</th>
+            </tr>
+            <tr>
+                <td><strong>Mon-Sat</strong></td>
+                <td><input type="radio" name="delivery" value="12.60" onclick="noSunday();" />$12.60</td>
+                <td><input type="radio" name="delivery" value="40.95" onclick="noSunday();" />$40.95</td>
+                <td><input type="radio" name="delivery" value="81.90" onclick="noSunday();" />$80.90</td>
+                <td><input type="radio" name="delivery" value="156.00" onclick="noSunday();" />$156.00</td>
+            </tr>
+            <tr>
+                <td><strong>Every Day</strong></td>
+                <td><input type="radio" name="delivery" value="12.60" onclick="noSunday();" />$13.56</td>
+                <td><input type="radio" name="delivery" value="40.95" onclick="noSunday();" />$44.07</td>
+                <td><input type="radio" name="delivery" value="81.90" onclick="noSunday();" />$88.14</td>
+                <td><input type="radio" name="delivery" value="156.00" onclick="noSunday();" />$159.74</td>
+            </tr>
+        </table>
+
+        <p>
+            <strong>Sundays only ($3.50 per week)</strong>
+            <input type="radio" name="sunday" value="weekly" onclick="noDelivery();" />Bill me weekly
+            <input type="radio" name="sunday" value="monthly" onclick="noDelivery();" />Bill me monthly
+        </p>
+
+        <p>Do you subscribe to any other newspapers?</p>
+        <p>
+            <input type="checkbox" name="newspapers" value="nytimes"     />New York Times<br />
+            <input type="checkbox" name="newspapers" value="bostonglobe" />Boston Globe<br />
+            <input type="checkbox" name="newspapers" value="sfchronicle" />San Francisco Chronicle<br />
+            <input type="checkbox" name="newspapers" value="miamiherald" />Miami Herald<br />
+            <input type="checkbox" name="newspapers" value="other"       />Other<br />
+        </p>
+
+        <!--p>Do you subscribe to any magazines?</p>
+        <p>
+            <select name="magazine">
+                <option value="time">Time</option>
+                <option value="newsweek">Newsweek</option>
+                <option value="harpers">Harpers</option>
+                <option value="bus_week">Business Week</option>
+                <option value="entrepreneur">Entrepreneur</option>
+                <option value="people">People</option>
+                <option value="cosmo">Cosmopolitan</option>
+            </select>
+        </p-->
+
+        <p>Magazine <input type="text" size="68" /></p>
+        <p>
+            <input type="button" value="Add Magazine" onclick="addMagazine();" style="width: 120px" />
+            <input type="button" value="Delete Magazine" onclick="deleteMagazine();" style="width: 120px" />
+            <input type="button" value="Clear List" onclick="document.forms[0].magazines.options.length = 0;" style="width: 120px" />
+            <input type="button" value="Change Magazine" onclick="changeMagazine();" style="width: 120px" />
+        </p>
+        <p>
+            <select name="magazines" multiple="multiple" size="10" style="width: 500px">
+                <option value="none">Enter the magazines you subscribe to</option>
+            </select>
+        </p>
+
+        <!--p><input type="image" alt="Graphical image of a subscribe button" src="subscribe.gif" /></p-->
+        <div>
+            <button type="submit" style="border:0; background:white"><img src="subscribe.gif" alt="Graphical image of a subscribe button" /></button>
+            <button type="reset"  style="border:0; background:white"><img src="reset.gif" alt="Graphical image of reset button" /></button>
+        </div>
+    </form>
+</body>
+</html>

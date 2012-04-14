@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Registration</title>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+    <link rel="stylesheet" href="styles.css" type="text/css" />
+    <script type="text/javascript" src="scripts.js"></script>
+</head>
+<body onload="init();">
+    <h1>Registration</h1>
+    <form action="../FormProcessor.html" method="get" enctype="application/x-www-form-urlencoded" onsubmit="return confirmSubmit();" onreset="return confirmReset();">
+
+<!-- PERSONAL INFORMATION -->
+        <table>
+            <tbody>
+                <tr>
+                    <th colspan="2">Personal Information</th>
+                </tr>
+                <tr>
+                    <td>Name</td>
+                    <td><input type="text" name="name" size="50" value="" onfocus="hintName(false);" onblur="hintName(true);" /></td>
+                </tr>
+                <tr>
+                    <td>E-mail Address</td>
+                    <td><input type="text" name="email" size="50" value="" onfocus="hintEmail(false);" onblur="hintEmail(true);" /></td>
+                </tr>
+                <tr>
+                    <td>Telephone</td>
+                    <td>
+                        <input type="text" name="phone_area" size="3" value="" maxlength="3" onkeypress="return keyDigitOnly(this, event);" />
+                        <input type="text" name="phone_exchange" size="3" value="" maxlength="3" onkeypress="return keyDigitOnly(this, event);" />
+                        <input type="text" name="phone_number" size="4" value="" maxlength="4" onkeypress="return keyDigitOnly(this, event);" />
+                    </td>
+                </tr>
+
+<!-- SECURITY INFORMATION -->
+                <tr>
+                    <th colspan="2">Security Information</th>
+                </tr>
+                <tr>
+                    <td>Password</td>
+                    <td><input type="password" name="password" size="50" value="" onkeyup="validatePassword();" /></td>
+                </tr>
+                <tr>
+                    <td>Confirm Password</td>
+                    <td><input type="password" name="password_confirm" size="50" value="" onkeyup="validatePassword();" /></td>
+                </tr>
+                <tr>
+                    <td>Security Question</td>
+                    <td>
+                        <select name="security_question">
+                            <option value="mother_maiden_name">What is your mother's maiden name?</option>
+                            <option value="pet_name">What was your first pet's name?</option>
+                            <option value="favorite_color">What is your favorite color?</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Answer</td>
+                    <td><input type="text" name="security_answer" size="50" value="" /></td>
+                </tr>
+
+<!-- PREFERENCES -->
+                <tr>
+                    <th colspan="2">Preferences</th>
+                </tr>
+                <tr>
+                    <td>Special Offers via E-mail</td>
+                    <td>
+                        Yes<input type="radio" name="special_offers" size="50" value="yes" /> &nbsp;
+                        No<input type="radio" name="special_offers" size="50" value="no" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>Select Your Interests</td>
+                    <td>
+                        <input type="checkbox" name="interests" value="business" size="50" />Business <br />
+                        <input type="checkbox" name="interests" value="education" size="50" />Education <br />
+                        <input type="checkbox" name="interests" value="entertainment" size="50" />Entertainment <br />
+                        <input type="checkbox" name="interests" value="religion" size="50" />Religion <br />
+                        <input type="checkbox" name="interests" value="shopping" size="50" />Shopping <br />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div>
+            <button type="submit" style="border:1px solid black; background:lightgray">Register</button>
+            <button type="reset"  style="border:1px solid black; background:lightgray">Reset Form</button>
+        </div>
+    </form>
+</body>
+</html>

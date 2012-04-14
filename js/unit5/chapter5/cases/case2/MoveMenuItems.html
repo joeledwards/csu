@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Move Menu Items</title>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+    <link rel="stylesheet" href="styles.css" type="text/css" />
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    function moveMenuItems(src, dst) {
+        var name = new Option();
+        var count = src.length - 1;
+        for (var srcIndex = count; srcIndex >= 0; srcIndex--) {
+            if (src[srcIndex].selected) {
+                dstIndex = dst.length;
+                dst[dstIndex] = src[srcIndex];
+                dst[dstIndex].selected = false;
+            }
+        }
+    }
+    /* ]]> */
+    </script>
+</head>
+<body>
+    <form action="TheSite.html" method="get" enctype="application/x-www-form-urlencoded">
+    <table>
+        <tr>
+            <th valign="left">Available</th>
+            <th> </th>
+            <th valign="left">Selected</th>
+        </tr>
+        <tr>
+            <td class="list">
+                <select name="left" multiple="multiple">
+                    <option name="accepted">Alex</option>
+                    <option name="accepted">Devon</option>
+                    <option name="accepted">Bobby</option>
+                    <option name="accepted">Billy</option>
+                    <option name="accepted">Gracie</option>
+                    <option name="accepted">Shawn</option>
+                    <option name="accepted">Sean</option>
+                    <option name="accepted">William</option>
+                </select>
+            </td>
+            <td>
+                <button type="button" name="moveRight" value="left-right" onclick="moveMenuItems(document.forms[0].left, document.forms[0].right);">&gt;&gt;</button>
+                <br />
+                <button type="button" name="moveLeft" value="right-left" onclick="moveMenuItems(document.forms[0].right, document.forms[0].left);">&lt;&lt;</button>
+            </td>
+            <td class="list">
+                <select name="right" multiple="multiple">
+                    <option name="accepted">Abner</option>
+                    <option name="accepted">Hector</option>
+                    <option name="accepted">Tobias</option>
+                    <option name="accepted">Zerubbabel</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    </form>
+</body>
+</html>

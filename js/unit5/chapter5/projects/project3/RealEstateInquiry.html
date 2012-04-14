@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Realtor Inquiry</title>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    function setFormFocus() {
+        document.forms[0].visitor_name.focus();
+    }
+    /* ]]> */
+    </script>
+</head>
+<body onload="setFormFocus()">
+    <h1>Real Estate Inquiry</h1>
+    <form action="../FormProcessor.html" method="get" enctype="application/x-www-form-urlencoded">
+        <p>Name<br />
+            <input type="text" name="visitor_name" size="50" />
+        </p>
+        <p>E-mail address<br />
+            <input type="text" name="e-mail" size="50" />
+        </p>
+        <p>Phone<br />
+            <input type="text" name="phone" size="50" />
+        </p>
+        <p>Area of town<br />
+            <input type="text" name="area" size="50" />
+        </p>
+        <p>Property
+            <select name="property_type">
+                <option value="unselected">Select a Property Type</option>
+                <option value="condo">Condos</option>
+                <option value="single">Single Family Homes</option>
+                <option value="multi">Multifamily Homes</option>
+                <option value="mobile">Mobile Homes</option>
+                <option value="land">Land</option>
+            </select>
+           Sq. feed
+            <input type="text" name="feet" size="5" />
+        </p>
+        <p>Bedrooms
+            <input type="text" name="bedrooms" size="5" />
+           Maximum price
+            <input type="text" name="price" size="12" />
+        </p>
+        <p>How should we contact you?
+            <input type="radio" name="contactHow" value="call_me" /> Call me
+            <input type="radio" name="contactHow" value="e-mail_me" /> E-mail me
+        </p>
+        <p>
+            <input type="submit" />
+        </p>
+    </form>
+</body>
+</html>
