@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Welcome</title>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+    <link rel="stylesheet" href="../../js_styles.css" type="text/css" />
+</head>
+<body>
+    <h1>Welcome to my Web Page</h1>
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    var dateObject = new Date();
+    var greeting = "";
+    var curTime = "";
+    var minuteValue = dateObject.getMinutes();
+    var hourValue = dateObject.getHours();
+    if (minuteValue < 10) {
+        minuteValue = "0" + minuteValue;
+    }
+
+    var indicator = (hourValue < 12) ? "AM" : "PM";
+    var dayPart   = (hourValue < 12) ? "morning" :
+                    (hourValue < 17) ? "afternoon" : "evening";
+    var adjustedHour = (hourValue > 12) ? (hourValue - 12) : hourValue;
+
+    greeting = "<p>Good "+dayPart+"! ";
+    curTime = adjustedHour + ":" + minuteValue + " " + indicator;
+
+    var dayArray   = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
+    var monthArray = new Array("January" , "February" , "March"     ,
+                               "April"   , "May"      , "June"      ,
+                               "July"    , "August"   , "September" ,
+                               "October" , "November" , "December"  );
+    var day = dateObject.getDay();
+    var month = dateObject.getMonth();
+    document.write("<p>" + greeting + "It is " + curTime + " on " + dayArray[day] + ", " + monthArray[month] + " " + dateObject.getDate() + ", " + dateObject.getFullYear() + ".</p>");
+
+    /* ]]> */
+    </script>
+</body>
+</html>

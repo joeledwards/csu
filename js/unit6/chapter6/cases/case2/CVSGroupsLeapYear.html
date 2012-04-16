@@ -4,12 +4,12 @@
 <head>
     <title>Central Valley Snowboarding</title>
     <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
-    <link rel="stylesheet" href="../js_styles.css" type="text/css" />
+    <link rel="stylesheet" href="../../js_styles.css" type="text/css" />
 </head>
 <body>
     <h1>Central Valley Snowboarding</h1>
     <h2>Group Reservations</h2>
-    <form action="../FormProcessor.html" method="get" enctype="application/x-www-form-urlencoded">
+    <form action="../../FormProcessor.html" method="get" enctype="application/x-www-form-urlencoded">
         <h3>Snowboarding Date</h3>
         <p>
             <input type="text" name="reservationDate" />
@@ -57,7 +57,7 @@
         document.forms[0].reservationDate.value = dateToday;
 
         function displayCalendar(whichMonth) {
-            calendarWin = window.open("", "CalWindow", "status=no,resizable=yes,width=400,height=320,left=200,top=200");
+            var calendarWin = window.open("", "CalWindow", "status=no,resizable=yes,width=400,height=320,left=200,top=200");
             calendarWin.focus();
             calendarWin.document.write("<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' ");
             calendarWin.document.write("'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>");
@@ -95,11 +95,20 @@
                 ++dateCounter;
             }
 
-            var numDayes = 0;
+            var numDays = 0;
             // January, March, May, July, August, October, December
             switch (month) {
                 case 1:
-                    numDayes = 28;
+                    var thisYear = dateObject.getYear();
+                    if (thisYear % 4 != 0) {
+                        numDays = 28;
+                    } else if (thisYear % 400 == 0) {
+                        numDays = 29;
+                    } else if (thisYear % 100 == 0) {
+                        numDays = 28;
+                    } else {
+                        numDays = 29;
+                    }
                     break;
                 case 3:
                 case 5:
@@ -108,7 +117,7 @@
                     numDays = 30;
                     break;
                 default:
-                    numDayes = 31;
+                    numDays = 31;
             }
 
             for (var rowCounter = 0; rowCounter < 5; ++rowCounter) {
@@ -165,8 +174,7 @@
                 ++newContact;
             }
 
-            if (form.lastname.value == "" ||
-                form.firstname.value == "") {
+            if (form.lastname.value == "" || form.firstname.value == "") {
                 window.alert("You must enter the contact's first and last names.");
             } else {
                 var contactID = "contact" + newContact;
@@ -185,11 +193,12 @@
                 createContact.text = contact.lastName + ", " + contact.firstName;
                 form.contacts.options[newContact] = createContact;
             }
+            calcGroupDiscount(newContact+1);
         }
 
         function deleteContact() {
-            form = document.forms[0];
-            var contactSlected = false;
+            var form = document.forms[0];
+            var contactSelected = false;
             var selectedContact = 0;
             for (var i=0; i < form.contacts.options.length; ++i) {
                 if (form.contacts.options[i].selected == true) {
@@ -206,22 +215,26 @@
                 }
                 for (var i=0; i < form.contacts.options.length; ++i) {
                     var contactId = "contact" + i;
-                    var contact = contactList[contactId];
-                    contact.lastName  = form.lastname.value;
-                    contact.firstName = form.firstname.value;
-                    contact.telephone = form.telephone.value;
-                    contact.address   = form.address.value;
-                    contact.city      = form.city.value;
-                    contact.state     = form.state.value;
-                    contact.zip       = form.zip.value;
+                    var contact = new Contact();
+                    contactList[contactId] = contact;
+                    if (contact) {
+                        contact.lastName  = form.lastname.value;
+                        contact.firstName = form.firstname.value;
+                        contact.telephone = form.telephone.value;
+                        contact.address   = form.address.value;
+                        contact.city      = form.city.value;
+                        contact.state     = form.state.value;
+                        contact.zip       = form.zip.value;
+                    }
                 }
             } else {
                 window.alert("You must select a contact in the list.");
             }
+            calcGroupDiscount(document.forms[0].contacts.options.length);
         }
 
         function getContactInfo() {
-            form = document.forms[0];
+            var form = document.forms[0];
             form.lastname.value  = this.lastName;
             form.firstname.value = this.firstName;
             form.telephone.value = this.telephone;
@@ -232,8 +245,8 @@
         }
 
         function updateSelectedContact(curIndex) {
-            form = document.forms[0];
-            contact = form.contacts.options[curIndex];
+            var form = document.forms[0];
+            var contact = form.contacts.options[curIndex];
             this.lastName  = form.lastname.value;
             this.firstName = form.firstname.value;
             this.telephone = form.telephone.value;
@@ -272,7 +285,7 @@
                     City, State, Zip<br />
                     <input type="text" name="city" size="34" /><br />
                     <input type="text" name="state" size="2" maxlength="2" /><br />
-                    <input type="text" name="zip" size="5"maxlength="5" /><br />
+                    <input type="text" name="zip" size="5" maxlength="5" /><br />
                 </td>
             </tr>
         </table>
@@ -284,10 +297,7 @@
             <li>11-24 snowboarders: 20% discount</li>
             <li>25+ snowboarders: 25% discount</li>
         </ul>
-        <p> How many snowboarders are you your group?
-            <input type="text" size="5" value="0" onchange="calcGroupDiscount(this.value)" />
-            <br />
-            Your group rate is $
+        <p>Your group rate is $
             <input type="text" name="discount" size="60" value="0" readonly="readonly" style="border: none" />
         </p>
 
