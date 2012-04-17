@@ -1,0 +1,293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>ABQ Baseball League</title>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+    <link rel="stylesheet" href="../../js_styles.css" type="text/css" />
+</head>
+<body>
+    <h1>ABQ Baseball League</h1>
+    <h2>Roster Submission Form</h2>
+    <form action="../../FormProcessor.html" method="get" enctype="application/x-www-form-urlencoded">
+        <h3>Coach Information</h3>
+        <table border="0">
+            <tr valign="top">
+                <td>
+                    Last name
+                    <br />
+                    <input type="text" name="coachLastName" size="50" />
+                    <br />
+                    First name
+                    <br />
+                    <input type="text" name="coachFirstName" size="50" />
+                    <br />
+                    Telephone
+                    <br />
+                    <input type="text" name="coachTelephone" size="50" />
+                    <br />
+                    Address
+                    <br />
+                    <input type="text" name="coachAddress" size="50" />
+                    <br />
+                    City, State, Zip
+                    <br />
+                    <input type="text" name="coachCity" size="34" />
+                    <input type="text" name="coachState" size="2" maxlength="2" />
+                    <input type="text" name="coachZip" size="5" maxlength="5" />
+                </td>
+            </tr>
+        </table>
+
+        <script type="text/javascript">
+        /* <![CDATA[ */
+        var dateObject = new Date();
+        var month = dateObject.getMonth();
+        var monthArray = new Array("January" , "February" , "March"     ,
+                                   "April"   , "May"      , "June"      ,
+                                   "July"    , "August"   , "September" ,
+                                   "October" , "November" , "December"  );
+        var dateToday = monthArray[month] + " " + dateObject.getDate() + ", " + dateObject.getFullYear();
+
+        document.forms[0].reservationDate.value = dateToday;
+
+        function displayCalendar(whichMonth) {
+            var calendarWin = window.open("", "CalWindow", "status=no,resizable=yes,width=400,height=320,left=200,top=200");
+            calendarWin.focus();
+            calendarWin.document.write("<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' ");
+            calendarWin.document.write("'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>");
+            calendarWin.document.write("<html xmlns='http://www.w3.org/1999/xhtml'>");
+            calendarWin.document.write("<head><title>ABQ Baseball League</title>");
+            calendarWin.document.write("<meta http-equiv='content-type' content='text/html; charset=iso-8859-1' />");
+            calendarWin.document.write("<link rel='stylesheet' href='../js_styles.css' type='text/css' /></head>");
+            calendarWin.document.write("<body>");
+            calendarWin.document.write("<table cellspacing='0' border='1' width='100%'>");
+
+            dateObject.setMonth(dateObject.getMonth()+whichMonth);
+
+            var month = dateObject.getMonth();
+            calendarWin.document.write("<tr>");
+            calendarWin.document.write("<td colspan='2'><a href='' onclick='self.opener.displayCalendar(-1);return false'>Previous</a></td>");
+            calendarWin.document.write("<td colspan='3' align='center'><strong>"+monthArray[month]+" "+dateObject.getFullYear()+"</strong></td>");
+            calendarWin.document.write("<td colspan='2' align='right'><a href='' onclick='self.opener.displayCalendar(+1);return false'>Next</a></td>");
+            calendarWin.document.write("</tr>");
+
+            calendarWin.document.write("<tr align='center'><td>Sun</td><td>Mon</td><td>Tue</td><td>Wed</td><td>Thu</td><td>Fri</td><td>Sat</td></tr>");
+            calendarWin.document.write("<tr align='center'>");
+
+            dateObject.setDate(1);
+            var dayOfWeek = dateObject.getDay();
+            for (var i=0; i<dayOfWeek; ++i) {
+                calendarWin.document.write("<td>&nbsp;</td>");
+            }
+
+            var daysWithDates = 7 - dayOfWeek;
+            var dateCounter = 1;
+
+            for(var i=0; i<daysWithDates; ++i) {
+                var curDate = monthArray[month] + " " + dateCounter + ", " + dateObject.getFullYear();
+                calendarWin.document.write("<td><a href='' onclick='self.opener.document.forms[0].reservationDate.value=\""+ curDate + "\";self.close(); return false'>" + dateCounter + "</a></td>");
+                ++dateCounter;
+            }
+
+            var numDays = 0;
+            // January, March, May, July, August, October, December
+            switch (month) {
+                case 1:
+                    var thisYear = dateObject.getYear();
+                    if (thisYear % 4 != 0) {
+                        numDays = 28;
+                    } else if (thisYear % 400 == 0) {
+                        numDays = 29;
+                    } else if (thisYear % 100 == 0) {
+                        numDays = 28;
+                    } else {
+                        numDays = 29;
+                    }
+                    break;
+                case 3:
+                case 5:
+                case 8:
+                case 10:
+                    numDays = 30;
+                    break;
+                default:
+                    numDays = 31;
+            }
+
+            for (var rowCounter = 0; rowCounter < 5; ++rowCounter) {
+                var weekDayCounter = 0;
+                calendarWin.document.write("<tr align='center'>");
+                while (weekDayCounter < 7) {
+                    var curDate = monthArray[month] + " " + dateCounter + ", " + dateObject.getFullYear();
+                    if (dateCounter <= numDays) {
+                        calendarWin.document.write("<td><a href='' onclick='self.opener.document.forms[0].reservationDate.value=\"" + curDate + "\";self.close(); return false'>" + dateCounter + "</a></td>");
+                    }
+                    else {
+                        calendarWin.document.write("<td>&nbsp;</td>");
+                    }
+                    ++weekDayCounter;
+                    ++dateCounter;
+                }
+                calendarWin.document.write("</tr>");
+            }
+            calendarWin.document.write("</table></body></html>");
+            calendarWin.document.close();
+        }
+
+        function calcGroupDiscount(groupSize) {
+            var dailyRate = 49;
+            if (groupSize > 4 && groupSize < 11) {
+                dailyRate /= 1.1;
+            } else if (groupSize > 10 && groupSize < 25) {
+                dailyRate /= 1.2;
+            } else if (groupSize > 24) {
+                dailyRate /= 1.25;
+            }
+            var groupRate = groupSize * dailyRate;
+            groupRate = Math.round(groupRate);
+            document.forms[0].discount.value = groupRate;
+        }
+        
+        var contactList = new Object();
+        function Contact() {
+            this.lastName = "";
+            this.firstName = "";
+            this.telephone = "";
+            this.address = "";
+            this.city = "";
+            this.state = "";
+            this.zip = "";
+            this.getContacts = getContactInfo;
+            this.updateContact = updateSelectedContact;
+        }
+
+        function addContact() {
+            var newContact = 0;
+            var form = document.forms[0];
+            for (contact in contactList) {
+                ++newContact;
+            }
+
+            if (form.lastname.value == "" || form.firstname.value == "") {
+                window.alert("You must enter the contact's first and last names.");
+            } else {
+                var contactID = "contact" + newContact;
+                var contact = new Contact();
+                contactList[contactID] = contact;
+                contact.lastName  = form.lastname.value;
+                contact.firstName = form.firstname.value;
+                contact.telephone = form.telephone.value;
+                contact.address   = form.address.value;
+                contact.city      = form.city.value;
+                contact.state     = form.state.value;
+                contact.zip       = form.zip.value;
+
+                var createContact = new Option();
+                createContact.value = contact.lastName + ", " + contact.firstName;
+                createContact.text = contact.lastName + ", " + contact.firstName;
+                form.contacts.options[newContact] = createContact;
+            }
+            calcGroupDiscount(newContact+1);
+        }
+
+        function deleteContact() {
+            var form = document.forms[0];
+            var contactSelected = false;
+            var selectedContact = 0;
+            for (var i=0; i < form.contacts.options.length; ++i) {
+                if (form.contacts.options[i].selected == true) {
+                    contactSelected = true;
+                    selectedContact = i;
+                    break;
+                }
+            }
+            form.contacts.options[i] = null;
+
+            if (contactSelected == true) {
+                for (prop in contactList) {
+                    delete contactList[prop];
+                }
+                for (var i=0; i < form.contacts.options.length; ++i) {
+                    var contactId = "contact" + i;
+                    var contact = new Contact();
+                    contactList[contactId] = contact;
+                    if (contact) {
+                        contact.lastName  = form.lastname.value;
+                        contact.firstName = form.firstname.value;
+                        contact.telephone = form.telephone.value;
+                        contact.address   = form.address.value;
+                        contact.city      = form.city.value;
+                        contact.state     = form.state.value;
+                        contact.zip       = form.zip.value;
+                    }
+                }
+            } else {
+                window.alert("You must select a contact in the list.");
+            }
+            calcGroupDiscount(document.forms[0].contacts.options.length);
+        }
+
+        function getContactInfo() {
+            var form = document.forms[0];
+            form.lastname.value  = this.lastName;
+            form.firstname.value = this.firstName;
+            form.telephone.value = this.telephone;
+            form.address.value   = this.address;
+            form.city.value      = this.city;
+            form.state.value     = this.state;
+            form.zip.value       = this.zip;
+        }
+
+        function updateSelectedContact(curIndex) {
+            var form = document.forms[0];
+            var contact = form.contacts.options[curIndex];
+            this.lastName  = form.lastname.value;
+            this.firstName = form.firstname.value;
+            this.telephone = form.telephone.value;
+            this.address   = form.address.value;
+            this.city      = form.city.value;
+            this.state     = form.state.value;
+            this.zip       = form.zip.value;
+            contact.value = this.lastName + ", " + this.firstName;
+            contact.text  = this.lastName + ", " + this.firstName;
+            window.alert("Contact information updated.");
+        }
+        /* ]]> */
+        </script>
+
+        <h3>Group Members</h3>
+        <p>
+            <input type="button" value="Add Player" onclick="addContact();" />
+            <input type="button" value="Delete Player" onclick="deleteContact();"/>
+            <input type="button" value="Update Player Info" onclick="contactList['contact' + document.forms[0].contacts.selectedIndex].updateContact(document.forms[0].contacts.selectedIndex);" />
+        </p>
+        <table border="0">
+            <tr>
+                <td>
+                    <select name="contacts" size="13" style="width: 150px" onclick="contactList['contact' + this.selectedIndex].getContacts();">
+                        <option value="contacts">Group Members</option>
+                    </select>
+                </td>
+                <td>Last name<br />
+                    <input type="text" name="lastname" size="50" /><br />
+                    First name<br />
+                    <input type="text" name="firstname" size="50" /><br />
+                    Telephone<br />
+                    <input type="text" name="telephone" size="50" /><br />
+                    Address<br />
+                    <input type="text" name="address" size="50" /><br />
+                    City, State, Zip<br />
+                    <input type="text" name="city" size="34" /><br />
+                    <input type="text" name="state" size="2" maxlength="2" /><br />
+                    <input type="text" name="zip" size="5" maxlength="5" /><br />
+                </td>
+            </tr>
+        </table>
+
+        <p>
+            <input type="submit" value="Submit Team Roster" />
+        </p>
+    </form>
+</body>
+</html>

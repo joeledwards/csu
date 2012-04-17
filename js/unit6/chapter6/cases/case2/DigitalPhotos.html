@@ -9,7 +9,7 @@
 </head>
 <body onload="init();">
     <h1>Photo Decal</h1>
-    <form action="../../FormProcessor.html" method="get" enctype="application/x-www-form-urlencoded" onsubmit="preProcess(this);" onreset="resetInputs(this);">
+    <form action="../../FormProcessor.html" method="get" enctype="application/x-www-form-urlencoded" onsubmit="return preProcess(this);" onreset="return resetInputs(this);">
     <table>
         <tbody>
             <tr>
@@ -20,6 +20,20 @@
                 <td colspan="2">
                     <input type="text" name="first_name" value="" size="50" /> <br />
                     <input type="text" name="last_name" value="" size="50" />
+                </td>
+            </tr>
+            <tr>
+                <td>Phone</td>
+                <td colspan="2">
+                    <input type="text" name="phone_area"     value="" size="3" maxlength="3" />
+                    <input type="text" name="phone_exchange" value="" size="3" maxlength="3" />
+                    <input type="text" name="phone_number"   value="" size="4" maxlength="4" />
+                </td>
+            </tr>
+            <tr>
+                <td>E-mail</td>
+                <td colspan="2">
+                    <input type="text" name="email" value="" size="50" />
                 </td>
             </tr>
             <tr>
@@ -44,24 +58,21 @@
             <tr>
                 <td>Decal Items</td>
                 <td>
-                    <input type="radio" name="item" value="calendar" />Calendar <br />
-                    <input type="radio" name="item" value="poster" />Poster <br />
-                    <input type="radio" name="item" value="print" />Prints
+                    <input type="radio" name="item" value="calendar" onclick="readyDate(2);" />Calendar <br />
+                    <input type="radio" name="item" value="poster"   onclick="readyDate(1);" />Poster <br />
+                    <input type="radio" name="item" value="print"    onclick="readyDate(1);" />Prints
                 </td>
                 <td>
-                    <input type="radio" name="item" value="coffee_mug" />Coffee Mug <br />
-                    <input type="radio" name="item" value="sweater" />Sweater <br />
-                    <input type="radio" name="item" value="t-shirt" />T-Shirt
+                    <input type="radio" name="item" value="coffee_mug" onclick="readyDate(2)" />Coffee Mug <br />
+                    <input type="radio" name="item" value="sweater"    onclick="readyDate(4)" />Sweater <br />
+                    <input type="radio" name="item" value="t-shirt"    onclick="readyDate(3)" />T-Shirt
                 </td>
             </tr>
             <tr>
-                <td>Estimated Ready Date*</td>
+                <td>Estimated Ready Date</td>
                 <td colspan="3">
                     <input type="text" name="ready" value="" />
-                    <br />
-                    <br />
-                    <sub>*Orders after 3pm will be processed the next day.</sub><br />
-                    <sub>Orders are not processed on weekends</sub>
+                    <input type="hidden" name="order_time" value="" />
                 </td>
             </tr>
         </tbody>
