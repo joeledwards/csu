@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>String Class Examples</title>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+    <link rel="stylesheet" href="../../js_styles.css" type="text/css" />
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    var name;
+    firstName = "Joel";
+    lastName = "Edwards";
+    var placeOfBirth;
+    name = firstName + " ";
+    name += lastName;
+    placeOfBirth = "Grants Pass";
+    placeOfBirth += ", Oregon";
+
+    nameArray = name.split(" ");
+    document.write("<p>My first name is: " + nameArray[0] + "<br />");
+    document.write("My last name is: " + nameArray[1] + "<br />");
+    document.write("There are " + firstName.length + " characters in my first name" + "<br />");
+    document.write("I was born in " + placeOfBirth + "<br />");
+    document.write("My initials are: " + firstName.charAt(0) + lastName.charAt(0) + "</p>");
+    /* ]]> */
+    </script>
+</head>
+<body>
+</body>
+</html>
