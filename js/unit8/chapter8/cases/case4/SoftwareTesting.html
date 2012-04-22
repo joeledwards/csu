@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Analysis and Design</title>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+    <link rel="stylesheet" href="../../js_styles.css" type="text/css" />
+</head>
+<body>
+    <h1>Software Testing</h1>
+    <p>
+    The point of software testing is to ensure that the system behaves as specified by the requirements and design documents. A good testing solution examines the software programatically and systematically, ensuring overall correctness and adherence to guidelines without trying to cover every single corner case. For example, If you want to test a library which converts a between variable length integers and standard integer types, you could get away with testing every possible value in a 32-bit integer (takes about 15 minutes on modern hardware), but not a 64-bit integer (would take approximately 1.8 million years sequential).
+    </p>
+    <p>
+    My approach to testing would be in multiple parts, and at various levels. I tend to develop in a modular fasion, so my resulting code lends itself to unit testing. I can develop tests designed specifically for each module, which include valid, invalid, and &quot;impossible&quot; (sanity check) inputs. Variuos levels can (and often should) be tested to ensure that not only does each component work, but the whole works as expected.
+    </p>
+    <ul>
+        <li>Perform automated tests on each function.</li>
+        <li>Perform automated enstantiations of each Object type, and all connected functions (methods).</li>
+        <li>Perform automated analysis of each form and/or page if possible (more difficult with dynamically generated content).</li>
+        <li>Perform automated flow analysis, inspecting interaction between modules, 
+        <li>Perform human-interation tests. This should be with subjects no involved with the design/development of the system.</li>
+    </ul>
+</body>
+</html>
