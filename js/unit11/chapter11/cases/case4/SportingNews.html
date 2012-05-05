@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Sporting News</title>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+    <link rel="stylesheet" href="../../js_styles.css" type="text/css" />
+    <style type="text/css">
+        body {
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            font-size: 12px;
+        }
+        h1 {
+            color: #039;
+        }
+        table {
+            background-color: gray;
+            border-style: solid;
+            border-width: 1px;
+            border-color: black;
+            color: black;
+        }
+        a,
+        a.noDecor
+        {
+            text-decoration: none;
+            color: black;
+        }
+        table.noShow {
+            visibility:hidden;
+            position:absolute;
+            color: black;
+        }
+    </style>
+    <!--script type="text/javascript" src="scripts.js"></script-->
+</head>
+<body>
+</body>
+    <table width="75%">
+        <tr>
+            <td onmouseover="document.getElementById('football').style.visibility='visible';" onmouseout="document.getElementById('football').style.visibility='hidden';">
+                <a href="" class="noDecor">American Football</a>
+                <table id="football" width="20%" class="noShow">
+                    <tr><td><a href="http://en.wikipedia.org/wiki/American_football">Overview (Wikipedia)</a></td></tr>
+                    <tr><td><a href="http://www.nfl.com/">NFL</a></td></tr>
+                    <tr><td><a href="http://www.ncaafootball.com/">NCAA Football</a></td></tr>
+                </table>
+            </td>
+            <td onmouseover="document.getElementById('baseball').style.visibility='visible';" onmouseout="document.getElementById('baseball').style.visibility='hidden';">
+                <a href="" class="noDecor">Baseball</a>
+                <table id="baseball" width="20%" class="noShow">
+                    <tr><td><a href="http://en.wikipedia.org/wiki/Baseball">Overview (Wikipedia)</a></td></tr>
+                    <tr><td><a href="http://mlb.mlb.com/index.jsp">MLB</a></td></tr>
+                    <tr><td><a href="http://www.ncaa.com/sports/baseball/d1">NCAA Baseball</a></td></tr>
+                </table>
+            </td>
+            <td onmouseover="document.getElementById('basketball').style.visibility='visible';" onmouseout="document.getElementById('basketball').style.visibility='hidden';">
+                <a href="" class="noDecor">Basketball</a>
+                <table id="basketball" width="20%" class="noShow">
+                    <tr><td><a href="http://en.wikipedia.org/wiki/Basketball">Overview (Wikipedia)</a></td></tr>
+                    <tr><td><a href="http://www.nba.com/playoffs/2012/index.html">NBA</a></td></tr>
+                    <tr><td><a href="http://www.ncaa.com/sports/basketball-men/d1">NCAA Men's Basketball</a></td></tr>
+                    <tr><td><a href="http://www.ncaa.com/sports/basketball-women/d1">NCAA Women's Basketball</a></td></tr>
+                </table>
+            </td>
+            <td onmouseover="document.getElementById('soccer').style.visibility='visible';" onmouseout="document.getElementById('soccer').style.visibility='hidden';">
+                <a href="" class="noDecor">Soccer</a>
+                <table id="soccer" width="20%" class="noShow">
+                    <tr><td><a href="http://en.wikipedia.org/wiki/Soccer">Overview (Wikipedia)</a></td></tr>
+                    <tr><td><a href="http://www.worldsoccer.com/">World Soccer</a></td></tr>
+                    <tr><td><a href="http://www.soccer.com/">Soccer (Eurosport)</a></td></tr>
+                    <tr><td><a href="http://www.ussoccer.com/">US Soccer</a></td></tr>
+                    <tr><td><a href="http://www.ncaa.com/sports/soccer-men/d1">NCAA Men's Soccer</a></td></tr>
+                    <tr><td><a href="http://www.ncaa.com/sports/soccer-men/d1">NCAA Women's Soccer</a></td></tr>
+                </table>
+            </td>
+            <td onmouseover="document.getElementById('tennis').style.visibility='visible';" onmouseout="document.getElementById('tennis').style.visibility='hidden';">
+                <a href="" class="noDecor">Tennis</a>
+                <table id="tennis" width="20%" class="noShow">
+                    <tr><td><a href="http://en.wikipedia.org/wiki/Tennis">Overview (Wikipedia)</a></td></tr>
+                    <tr><td><a href="http://www.tennisworldusa.org/">Tennis World</a></td></tr>
+                    <tr><td><a href=http://www.ncaa.com/sports/tennis-men/d1">NCAA Men's Tennis</a></td></tr>
+                    <tr><td><a href="http://www.ncaa.com/sports/tennis-women/d1">NCAA Women's Tennis</a></td></tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</html>

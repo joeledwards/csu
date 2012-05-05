@@ -1,4 +1,3 @@
-var runner = undefined;
 var images = new Array();
 var leaves = new Array();
 var interval = 100;
@@ -21,7 +20,7 @@ function addLeaf()
 {
     var idx = Math.floor(Math.random() * images.length);
     var context = new Object;
-    context._fall_rate = Math.floor(Math.random() * 15) + 5; // 5 - 20 pixels per 
+    context._fall_rate = Math.floor(Math.random() * 15) + 10; // 10 - 25 pixels per 
     context._x_pos = Math.floor(Math.random() * (width - 50)) + 25;
     context._y_pos = -25;
     context._id = maxId++;
