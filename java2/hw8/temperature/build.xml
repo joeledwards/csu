@@ -28,8 +28,7 @@
 
 <!--COMPILE-->
     <target name="compile" depends="init" description="Compile the source">
-        <javac srcdir="${src}" destdir="${build}" 
-               debug="true" includeantruntime="no">
+        <javac srcdir="${src}" destdir="${build}" debug="on" includeantruntime="no">
             <classpath refid="compile.class.path"/>
         </javac>
     </target>
