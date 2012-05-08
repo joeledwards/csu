@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:cat="catalog.schemas.csu"
+        xmlns:pub="publication.schemas.csu"
+        targetNamespace="catalog.schemas.csu"
+        cat:schemaLocation="Catalog.xsd"
+        pub:schemaLocation="Publication.xsd"
+        elementFormDefault="qualified"
+        attributeFormDefault="qualified">
+
+    <xsd:import namespace="publication.schemas.csu" pub:schemaLocation="Publication.xsd" />
+
+    <!-- root -->
+    <xsd:element name="catalog" type="cat:catalog_T"/>
+
+    <!-- book -->
+    <xsd:element name="book" type="cat:book_T" />
+        <xsd:element name="isbn" type="xsd:nonNegativeInteger" />
+
+    <!-- article -->
+    <xsd:element name="article" type="cat:article_T" />
+        <xsd:element name="issn" type="xsd:nonNegativeInteger" />
+        <xsd:element name="month" type="xsd:nonNegativeInteger" />
+        <xsd:element name="periodical" type="xsd:string" />
+
+    <xsd:complexType name="catalog_T">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="cat:book" />
+            <xsd:element ref="cat:article" />
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:complexType name="book_T">
+        <xsd:complexContent>
+            <xsd:extension base="pub:publication_T">
+                <xsd:sequence>
+                    <xsd:element ref="cat:isbn" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="article_T">
+        <xsd:complexContent>
+            <xsd:extension base="pub:publication_T">
+                <xsd:sequence>
+                    <xsd:element ref="cat:month" />
+                    <xsd:element ref="cat:periodical" />
+                    <xsd:element ref="cat:issn" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+</xsd:schema>
