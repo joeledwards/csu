@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?> 
+<Order> 
+    <Manifest> 
+        <Item> 
+            <ID>150</ID> 
+            <NAME>All about Parsing.</NAME> 
+            <PRICE>$390</PRICE> 
+        </Item> 
+        <Item> 
+            <ID>200</ID> 
+            <NAME>The story about ...</NAME> 
+            <PRICE>$29</PRICE> 
+        </Item> 
+        <Item> 
+            <ID>250</ID> 
+            <NAME>SAX- DOM.</NAME> 
+            <PRICE>$149</PRICE> 
+        </Item> 
+        <Item> 
+            <ID>300</ID> 
+            <NAME>Java 2.</NAME> 
+            <PRICE>$259</PRICE> 
+        </Item> 
+    </Manifest> 
+</Order> 
