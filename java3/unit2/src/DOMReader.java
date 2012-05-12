@@ -42,6 +42,7 @@ public class DOMReader
 
     private HexBinaryAdapter hexbin = null;
     private MessageDigest digest = null;
+    private XHash hash = null;
 
  // constructor(s)
     public DOMReader()
@@ -63,6 +64,11 @@ public class DOMReader
     public String read(String xmlFile)
     {
         return read(new File(xmlFile));
+    }
+
+    private void resetHash()
+    {
+        hash = new XHash();
     }
 
  // read and validate the configuration
@@ -96,7 +102,7 @@ public class DOMReader
         // TODO: process the document
         processNode((Node)doc.getDocumentElement());
 
-        return this.hexbin.marshal(digest.digest());
+        return getHexDigest();
     }
 
     public void updateDigest(String data) {
@@ -111,6 +117,43 @@ public class DOMReader
         if (this.digest != null) {
             this.digest.update(data, offset, length);
         }
+        try {
+            System.out.printf("=== Updated Digest [%s] ===\n", this.hexbin.marshal(((MessageDigest)this.digest.clone()).digest()));
+        }
+        catch (CloneNotSupportedException ex) {
+            ;
+        }
+    }
+
+    public void updateHash(String data) {
+        updateHash(data.getBytes());
+    }
+
+    public void updateHash(byte[] data) {
+        updateHash(data, 0, data.length);
+    }
+
+    public void updateHash(byte[] data, int offset, int length) {
+        if (this.hash != null) {
+            this.hash.update(data, offset, length);
+        }
+        System.out.printf("=== Updated Hash [%s] ===\n", getHexHash());
+    }
+
+    public String getHexDigest()
+    {
+        if (this.digest != null) {
+            return this.hexbin.marshal(this.digest.digest());
+        }
+        return "";
+    }
+
+    public String getHexHash()
+    {
+        if (this.hash != null) {
+            return this.hexbin.marshal(this.hash.hash());
+        }
+        return "";
     }
 
     private void processNode(Node node)
@@ -123,28 +166,40 @@ public class DOMReader
                 NodeList children = node.getChildNodes();
                 NamedNodeMap attributes = node.getAttributes();
 
-                updateDigest(qName);
                 System.out.printf("Element-Start qName='%s'\n", qName);
+                updateDigest(qName);
+
+                // Reset the hash so each hash is unique across an Element's Attributes
+                resetHash();
                 for (int j = 0; j < attributes.getLength(); j++) {
                     processNode(attributes.item(j));
                 }
+                // Update the digest with the order-ignoring hash for Attributes
+                if (hash.hash() != null) {
+                    updateDigest(hash.hash(), 0, hash.hash().length);
+                }
+
+                // Process all child Nodes
                 for (int i = 0; i < children.getLength(); i++) {
                     processNode(children.item(i));
                 }
-                updateDigest(qName);
+
                 System.out.printf("Element-End qName='%s'\n", qName);
+                updateDigest(qName);
                 break;
             case Node.ATTRIBUTE_NODE:
                 Attr attribute = (Attr)node;
-                updateDigest(attribute.getName());
-                updateDigest(attribute.getValue());
                 System.out.printf("Attribute qName='%s' value='%s'\n", attribute.getName(), attribute.getValue());
+                updateHash(attribute.getName());
+                updateHash(attribute.getValue());
                 break;
             case Node.TEXT_NODE:
                 Text text = (Text)node;
                 String textData = text.getWholeText().trim();
-                updateDigest(textData);
-                System.out.printf("Character data [%s]\n", textData);
+                if (textData.length() > 0) {
+                    System.out.printf("Character data [%s]\n", textData);
+                    updateDigest(textData);
+                }
                 break;
             default:
                 String typeText = "UNRECOGNIZED";
@@ -195,7 +250,6 @@ public class DOMReader
                         typeText = "TEXT_NODE"; break;
                 }
                 System.out.printf("Element type %d [%s] no instruction\n", node.getNodeType(), typeText);
-                
         }
     }
 }

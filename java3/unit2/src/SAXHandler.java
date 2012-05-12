@@ -19,7 +19,6 @@ extends DefaultHandler
 {
     private Document dom;
     private String repr;
-    private String hash;
     private Hashtable<String, String> prefix_map;
     private Hashtable<String, String> uri_map;
     private String prefix;
@@ -27,11 +26,17 @@ extends DefaultHandler
     private HexBinaryAdapter hexbin = null;
 
     private MessageDigest digest = null;
+    private XHash hash = null;
 
     public SAXHandler()
     {
         this.dom = dom;
         this.hexbin = new HexBinaryAdapter();
+    }
+
+    private void resetHash()
+    {
+        hash = new XHash();
     }
 
 // Warnings and errors
@@ -54,7 +59,6 @@ extends DefaultHandler
     public void    startDocument()
     {
         this.repr = "";
-        this.hash = "";
         this.prefix_map = new Hashtable<String, String>();
         this.uri_map = new Hashtable<String, String>();
         try {
@@ -75,7 +79,45 @@ extends DefaultHandler
         if (this.digest != null) {
             this.digest.update(data, offset, length);
         }
+        try {
+            System.out.printf("=== Updated Digest [%s] ===\n", this.hexbin.marshal(((MessageDigest)this.digest.clone()).digest()));
+        }
+        catch (CloneNotSupportedException ex) {
+            ;
+        }
     }
+
+    public void updateHash(String data) {
+        updateHash(data.getBytes());
+    }
+
+    public void updateHash(byte[] data) {
+        updateHash(data, 0, data.length);
+    }
+
+    public void updateHash(byte[] data, int offset, int length) {
+        if (this.hash != null) {
+            this.hash.update(data, offset, length);
+        }
+        System.out.printf("=== Updated Hash [%s] ===\n", getHexHash());
+    }
+
+    public String getHexDigest()
+    {
+        if (this.digest != null) {
+            return this.hexbin.marshal(this.digest.digest());
+        }
+        return "";
+    }
+
+    public String getHexHash()
+    {
+        if (this.hash != null) {
+            return this.hexbin.marshal(this.hash.hash());
+        }
+        return "";
+    }
+
 
     public void    startPrefixMapping(String prefix, String uri)
     {
@@ -94,6 +136,7 @@ extends DefaultHandler
 
     public void    startElement(String uri, String localName, String qName, Attributes attributes)
     {
+        resetHash();
         String prefix = this.prefix;
         if (this.prefix_map.containsKey(uri)) {
             prefix = this.prefix_map.get(uri);
@@ -110,11 +153,14 @@ extends DefaultHandler
                           uri, prefix, localName, qName);
         updateDigest(qName);
 
-        // TODO: Go through attributes
         for (int i = 0; i < attributes.getLength(); i++) {
-            updateDigest(attributes.getQName(i));
-            updateDigest(attributes.getValue(i));
             System.out.printf("Attribute qName='%s' value='%s'\n", attributes.getQName(i), attributes.getValue(i));
+            updateHash(attributes.getQName(i));
+            updateHash(attributes.getValue(i));
+        }
+
+        if (hash.hash() != null) {
+            updateDigest(hash.hash(), 0, hash.hash().length);
         }
     }
 
@@ -143,8 +189,8 @@ extends DefaultHandler
         String charData = (new String(ch, start, length)).trim();
         if (charData.length() > 0) { 
             System.out.printf("Character data [%s]\n", charData);
+            updateDigest(charData);
         }
-        updateDigest(charData);
         //updateDigest(ch, start, length);
     }
 
@@ -196,14 +242,6 @@ extends DefaultHandler
     public void    processingInstruction(String target, String data)
     {
         System.out.printf("Processing Instruction target='%s data='%s'\n", target, data);
-    }
-
-    public String getHexDigest()
-    {
-        if (this.digest != null) {
-            return this.hexbin.marshal(this.digest.digest());
-        }
-        return null;
     }
 
     /*

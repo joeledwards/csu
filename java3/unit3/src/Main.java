@@ -21,25 +21,14 @@ public class Main
 
     public static void main(String argv[])
     {
-        //String order = "order.xml";
-        String order = "../unit3/catalog.xml";
-        String domDigest;
-        String saxDigest;
+        StreamSource[] schemas = new StreamSource[] { new StreamSource( new File("Publication.xsd")),
+                                                       new StreamSource( new File("Catalog.xsd"))
+                                                    };
+        String catalog = "catalog.xml";
 
-        DOMReader dom = new DOMReader();
-        SAXReader sax = new SAXReader();
+        XMLValidator reader = new XMLValidator(schemas);
+        reader.validate(catalog);
 
-        // DOM parser and analysis
-        domDigest = dom.read(order);
-        System.out.printf("\n");
-
-        // SAX perser and analysis
-        saxDigest = sax.read(order);
-        System.out.printf("\n");
-
-        // Document parse mode comparison
-        System.out.printf("DOMReader SHA-1 Digest [%s]\n", domDigest);
-        System.out.printf("SAXReader SHA-1 Digest [%s]\n", saxDigest);
     }
 
     public static void error(String message)
