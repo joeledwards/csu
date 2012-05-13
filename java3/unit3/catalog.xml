@@ -1,22 +1,23 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<catalog 
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
-   xsi:noNamespaceSchemaLocation="catalog.xsd" 
-   title="OnJava.com" publisher="O'Reilly"> 
-   
- <journal date="April 2004"> 
-   <article>
-    <title>Declarative Programming in Java</title>
-    <author>Narayanan Jayaratchagan</author>
-   </article>
- </journal>
+<?xml version="1.0"?>
+<cat:catalog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://scagelietti.dyndns.org Catalog.xsd"
+             xmlns:cat="catalog.schemas.csu"
+             xmlns:pub="publication.schemas.csu">
 
- <journal date="January 2004">
-   <article> 
-    <title>Data Binding with XMLBeans</title>
-    <author>Daniel Steinberg</author>
-   </article>
- </journal>
-
-</catalog>
-
+    <cat:book>
+        <pub:title>JavaScript</pub:title>
+        <pub:author>Don Gosselin</pub:author>
+        <pub:year>2008</pub:year>
+        <cat:isbn>9781423901501</cat:isbn>
+    </cat:book>
+ 
+    <cat:article>
+        <pub:title>Java and XML</pub:title>
+        <pub:author>Joel Edwards</pub:author>
+        <pub:year>2012</pub:year>
+        <cat:month>5</cat:month>
+        <cat:periodical>Java Monthly</cat:periodical>
+        <cat:issn>0934820934852</cat:issn>
+    </cat:article>
+    
+</cat:catalog>

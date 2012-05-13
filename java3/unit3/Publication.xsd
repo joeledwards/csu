@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:pub="publication.schemas.csu"
+        targetNamespace="publication.schemas.csu"
+        pub:schemaLocation="http://scaglietti.dyndns.org Publication.xsd"
+        elementFormDefault="qualified"
+        attributeFormDefault="qualified">
+
+    <!-- publication -->
+    <xsd:element name="publication" type="pub:publication_T" />
+
+    <!-- general information -->
+    <xsd:element name="title"       type="xsd:string" />
+    <xsd:element name="author"      type="xsd:string" />
+    <xsd:element name="year"        type="xsd:nonNegativeInteger" />
+
+    <xsd:complexType name="publication_T">
+        <xsd:sequence>
+            <xsd:element ref="pub:title" />
+            <xsd:element ref="pub:author" />
+            <xsd:element ref="pub:year" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>

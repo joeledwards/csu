@@ -1,34 +1,56 @@
-<?xml version="1.0" encoding="utf-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"> 
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:cat="catalog.schemas.csu"
+        xmlns:pub="publication.schemas.csu"
+        targetNamespace="catalog.schemas.csu"
+        cat:schemaLocation="http://scaglietti.dyndns.org Catalog.xsd"
+        pub:schemaLocation="http://scaglietti.dyndns.org Publication.xsd"
+        elementFormDefault="qualified"
+        attributeFormDefault="qualified">
 
-  <xs:element name="catalog">
-   <xs:complexType>
-    <xs:sequence>
-     <xs:element ref="journal" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-    <xs:attribute name="title" type="xs:string"/>
-    <xs:attribute name="publisher"  type="xs:string"/>
-   </xs:complexType>
-  </xs:element>
+    <xsd:import namespace="publication.schemas.csu" pub:schemaLocation="Publication.xsd" />
 
-  <xs:element name="journal">
-   <xs:complexType>
-    <xs:sequence>
-     <xs:element ref="article" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-    <xs:attribute name="date" type="xs:string"/>
-   </xs:complexType>
-  </xs:element>
+    <!-- root -->
+    <xsd:element name="catalog" type="cat:catalog_T"/>
 
-  <xs:element name="article">
-   <xs:complexType>
-    <xs:sequence>
-     <xs:element name="title" type="xs:string"/>
-     <xs:element ref="author" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-   </xs:complexType>
-  </xs:element>
-  <xs:element name="author" type="xs:string"/>
+    <!-- book -->
+    <xsd:element name="book" type="cat:book_T" />
+        <xsd:element name="isbn" type="xsd:nonNegativeInteger" />
 
-</xs:schema>
+    <!-- article -->
+    <xsd:element name="article" type="cat:article_T" />
+        <xsd:element name="issn" type="xsd:nonNegativeInteger" />
+        <xsd:element name="month" type="xsd:nonNegativeInteger" />
+        <xsd:element name="periodical" type="xsd:string" />
 
+    <xsd:complexType name="catalog_T">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="cat:book" />
+            <xsd:element ref="cat:article" />
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:complexType name="book_T">
+        <xsd:complexContent>
+            <xsd:extension base="pub:publication_T">
+                <xsd:sequence>
+                    <xsd:element ref="cat:isbn" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="article_T">
+        <xsd:complexContent>
+            <xsd:extension base="pub:publication_T">
+                <xsd:sequence>
+                    <xsd:element ref="cat:month" />
+                    <xsd:element ref="cat:periodical" />
+                    <xsd:element ref="cat:issn" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+</xsd:schema>

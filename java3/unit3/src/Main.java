@@ -11,9 +11,14 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.XMLConstants;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+
+import org.xml.sax.SAXException;
 
 public class Main
 {
@@ -21,14 +26,52 @@ public class Main
 
     public static void main(String argv[])
     {
-        StreamSource[] schemas = new StreamSource[] { new StreamSource( new File("Publication.xsd")),
-                                                       new StreamSource( new File("Catalog.xsd"))
-                                                    };
-        String catalog = "catalog.xml";
+        Schema schema = null;
+        String domDigest;
+        String saxDigest;
 
-        XMLValidator reader = new XMLValidator(schemas);
-        reader.validate(catalog);
+        //*
+        StreamSource[] schemas = new StreamSource[] { new StreamSource(new File("Publication.xsd")),
+                                                      new StreamSource(new File("Catalog.xsd")) };
+        // */
+        /*
+        StreamSource[] schemas = new StreamSource[] { new StreamSource(new File("Catalog.xsd")) };
+        // */
+        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
+        try {
+            schema = schemaFactory.newSchema(schemas);
+        } catch (SAXException e) {
+            logger.severe("Could not read validation files '" +schemas+ "'.\n  Details: " +e);
+            throw new RuntimeException("Could not read validation file.");
+        }
+
+        String catalog = "Catalog.xml";
+
+        XMLValidator validator = new XMLValidator(schema);
+        DOMReader dom = new DOMReader(schema);
+        SAXReader sax = new SAXReader(schema);
+
+        System.err.printf("=== START VALIDATION ====================\n");
+        validator.validate(catalog);
+        System.err.printf("=== STOP VALIDATION ====================\n");
+        System.err.printf("\n");
+
+        // DOM parser and analysis
+        System.err.printf("=== START DOM ASSEMBLY ====================\n");
+        domDigest = dom.read(catalog);
+        System.err.printf("=== STOP DOM ASSEMBLY ====================\n");
+        System.err.printf("\n");
+
+        // SAX perser and analysis
+        System.err.printf("=== START SAX PARSE ====================\n");
+        saxDigest = sax.read(catalog);
+        System.err.printf("=== STOP SAX PARSE ====================\n");
+        System.err.printf("\n");
+
+        // Document parse mode comparison
+        System.err.printf("DOMReader SHA-1 Digest [%s]\n", domDigest);
+        System.err.printf("SAXReader SHA-1 Digest [%s]\n", saxDigest);
     }
 
     public static void error(String message)

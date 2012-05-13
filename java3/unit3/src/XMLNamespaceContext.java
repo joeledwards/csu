@@ -1,12 +1,17 @@
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 
 public class XMLNamespaceContext
 implements NamespaceContext
 {
+    private static final Logger logger = Logger.getLogger("XMLNamespaceContext");
+
     private Hashtable<String, String> namespaces;
     private Hashtable<String, ArrayList<String>> prefixes;
     private String defaultURI = XMLConstants.NULL_NS_URI;
