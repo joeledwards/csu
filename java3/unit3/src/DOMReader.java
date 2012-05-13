@@ -43,6 +43,10 @@ public class DOMReader
     private HexBinaryAdapter hexbin = null;
     private MessageDigest digest = null;
     private XHash hash = null;
+    private XMLParseErrorHandler errorHandler = null;
+
+    private boolean skipNamespaceDeclarations = true;
+    private boolean valid = false;
 
  // constructor(s)
     public DOMReader(Schema schema)
@@ -51,15 +55,15 @@ public class DOMReader
 
         this.xpath = XPathFactory.newInstance().newXPath();
         this.domFactory = DocumentBuilderFactory.newInstance();
-        domFactory.setNamespaceAware(true);
+        domFactory.setNamespaceAware(skipNamespaceDeclarations);
         if (schema != null) {
-            domFactory.setValidating(true);
             domFactory.setSchema(schema);
         }
 
+        errorHandler = new XMLParseErrorHandler();
         try {
             this.builder = domFactory.newDocumentBuilder();
-            this.builder.setErrorHandler(new XMLParseErrorHandler());
+            this.builder.setErrorHandler(errorHandler);
         } catch (ParserConfigurationException e) {
             logger.severe("Invalid configuration for SAX parser.\n  Details: " +e);
             throw new RuntimeException("Invalid configuration for SAX parser.");
@@ -69,11 +73,6 @@ public class DOMReader
     public String read(String xmlFile)
     {
         return read(new File(xmlFile));
-    }
-
-    private void resetHash()
-    {
-        hash = new XHash();
     }
 
  // read and validate the configuration
@@ -87,7 +86,14 @@ public class DOMReader
 
         try {
             this.doc = builder.parse(xmlFile);
-            //logger.info("Configuration file parsed.");
+            this.valid = true;
+
+            logger.info("DOM Document Assembled. Error Summary [" + 
+                        "fatal-errors:" + errorHandler.getFatalErrorCount() +
+                            ", errors:" + errorHandler.getErrorCount() +
+                          ", warnings:" + errorHandler.getWarningCount() + "]");
+
+            return documentReview();
         } catch (SAXException e) {
             logger.severe("Could not assemble DOM from config file '" +xmlFile+ "'.\n Details: " +e);
             throw new RuntimeException("Could not assemble configuration from file.");
@@ -96,10 +102,10 @@ public class DOMReader
             throw new RuntimeException("Could not read configuration file.");
         }
 
-        System.err.printf("Document generated: %s\n", doc.toString());
-        System.err.printf("\n");
+    }
 
-        return documentReview();
+    public boolean isValid() {
+        return this.valid;
     }
 
     private String documentReview()
@@ -123,11 +129,24 @@ public class DOMReader
             this.digest.update(data, offset, length);
         }
         try {
-            System.err.printf("DIGEST [%s]\n", this.hexbin.marshal(((MessageDigest)this.digest.clone()).digest()));
+            logger.finest("DIGEST ["+this.hexbin.marshal(((MessageDigest)this.digest.clone()).digest())+"]");
         }
         catch (CloneNotSupportedException ex) {
             ;
         }
+    }
+
+    public String getHexDigest()
+    {
+        if (this.digest != null) {
+            return this.hexbin.marshal(this.digest.digest());
+        }
+        return "";
+    }
+
+    private void resetHash()
+    {
+        hash = new XHash();
     }
 
     public void updateHash(String data) {
@@ -142,15 +161,7 @@ public class DOMReader
         if (this.hash != null) {
             this.hash.update(data, offset, length);
         }
-        System.err.printf("HASH [%s]\n", getHexHash());
-    }
-
-    public String getHexDigest()
-    {
-        if (this.digest != null) {
-            return this.hexbin.marshal(this.digest.digest());
-        }
-        return "";
+        logger.finest("HASH ["+getHexHash()+"]");
     }
 
     public String getHexHash()
@@ -171,7 +182,7 @@ public class DOMReader
                 NodeList children = node.getChildNodes();
                 NamedNodeMap attributes = node.getAttributes();
 
-                System.err.printf("Element-Start qName='%s'\n", qName);
+                logger.fine("Element-Start qName='"+qName+"'");
                 updateDigest(qName);
 
                 // Reset the hash so each hash is unique across an Element's Attributes
@@ -189,12 +200,18 @@ public class DOMReader
                     processNode(children.item(i));
                 }
 
-                System.err.printf("Element-End qName='%s'\n", qName);
+                logger.fine("Element-End qName='"+qName+"'");
                 updateDigest(qName);
                 break;
             case Node.ATTRIBUTE_NODE:
                 Attr attribute = (Attr)node;
-                System.err.printf("Attribute qName='%s' value='%s'\n", attribute.getName(), attribute.getValue());
+                if (skipNamespaceDeclarations) {
+                    if (attribute.getName().split(":")[0].equals("xmlns")) {
+                        logger.finer("Skipping Attribute qName='"+attribute.getName()+"' value='"+attribute.getValue()+"'");
+                        break;
+                    }
+                }
+                logger.fine("Attribute qName='"+attribute.getName()+"' value='"+attribute.getValue()+"'");
                 updateHash(attribute.getName());
                 updateHash(attribute.getValue());
                 break;
@@ -202,7 +219,7 @@ public class DOMReader
                 Text text = (Text)node;
                 String textData = text.getWholeText().trim();
                 if (textData.length() > 0) {
-                    System.err.printf("Character data [%s]\n", textData);
+                    logger.fine("Character data ["+textData+"]");
                     updateDigest(textData);
                 }
                 break;
@@ -254,7 +271,7 @@ public class DOMReader
                     case Node.TEXT_NODE:
                         typeText = "TEXT_NODE"; break;
                 }
-                System.err.printf("Element type %d [%s] no instruction\n", node.getNodeType(), typeText);
+                logger.finer("Element type "+node.getNodeType()+" ["+typeText+"] no instruction");
         }
     }
 }

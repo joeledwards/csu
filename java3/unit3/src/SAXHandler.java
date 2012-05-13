@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -31,11 +32,18 @@ extends DefaultHandler
 
     private MessageDigest digest = null;
     private XHash hash = null;
+    private ErrorHandler errorHandler = null;
 
     public SAXHandler()
     {
         this.dom = dom;
         this.hexbin = new HexBinaryAdapter();
+        this.errorHandler = (ErrorHandler)(new XMLParseErrorHandler());
+    }
+
+    public ErrorHandler getErrorHandler()
+    {
+        return this.errorHandler;
     }
 
     private void resetHash()
@@ -45,18 +53,21 @@ extends DefaultHandler
 
 // Warnings and errors
     public void error(SAXParseException exception)
+    throws SAXException
     {
-        System.err.printf("Parse error: %s\n", exception.toString());
+        this.errorHandler.error(exception);
     }
 
     public void fatalError(SAXParseException exception)
+    throws SAXException
     {
-        System.err.printf("Severe parse error: %s\n", exception.toString());
+        this.errorHandler.fatalError(exception);
     }
 
     public void warning(SAXParseException exception)
+    throws SAXException
     {
-        System.err.printf("Parse warn condition: %s\n", exception.toString());
+        this.errorHandler.warning(exception);
     }
 
 // Parse operations
@@ -68,7 +79,7 @@ extends DefaultHandler
         try {
             this.digest = MessageDigest.getInstance("SHA-1");
         } catch (NoSuchAlgorithmException e) {;}
-        System.err.printf("Document-Start\n");
+        logger.fine("Document-Start\n");
     }
 
     public void updateDigest(String data) {
@@ -84,7 +95,7 @@ extends DefaultHandler
             this.digest.update(data, offset, length);
         }
         try {
-            System.err.printf("DIGEST [%s]\n", this.hexbin.marshal(((MessageDigest)this.digest.clone()).digest()));
+            logger.finest("DIGEST [" + this.hexbin.marshal(((MessageDigest)this.digest.clone()).digest()) + "]");
         }
         catch (CloneNotSupportedException ex) {
             ;
@@ -103,7 +114,7 @@ extends DefaultHandler
         if (this.hash != null) {
             this.hash.update(data, offset, length);
         }
-        System.err.printf("HASH [%s]\n", getHexHash());
+        logger.finest("HASH [" +getHexHash()+ "]");
     }
 
     public String getHexDigest()
@@ -126,12 +137,10 @@ extends DefaultHandler
     public void    startPrefixMapping(String prefix, String uri)
     {
         if (this.prefix_map.containsKey(uri)) {
-            System.err.printf("Replacing prefix for uri '%s' (prefix: '%s' -> '%s')\n",
-                              prefix, this.uri_map.get(uri), prefix);
+            logger.finer("Replacing prefix for uri '" +prefix+ "' (prefix: '" +this.uri_map.get(uri)+ "' -> '" +prefix+ "')");
         }
         if (this.uri_map.containsKey(prefix)) {
-            System.err.printf("Replacing uri for prefix '%s' (uri: '%s' -> '%s')\n",
-                              prefix, this.uri_map.get(uri), prefix);
+            logger.finer("Replacing uri for prefix '" +prefix+ "' (uri: '" +this.uri_map.get(uri)+ "' -> '" +prefix+ "')");
         }
         this.prefix_map.put(uri, prefix);
         this.uri_map.put(prefix, uri);
@@ -145,20 +154,17 @@ extends DefaultHandler
         if (this.prefix_map.containsKey(uri)) {
             prefix = this.prefix_map.get(uri);
             if (this.prefix != null) {
-                System.err.printf("Element specifies URI '%s'. Selected prefix is '%s', URI's prefix is '%s'.\n",
-                                  uri, this.prefix_map.get(uri), prefix);
-
+                logger.finer("Element specifies URI '" +uri+ "'. Selected prefix is '" +this.prefix_map.get(uri)+ "', URI's prefix is '" +prefix+ "'");
             }
         }
         if (prefix == null) {
             prefix = "";
         }
-        System.err.printf("Element-Start uri='%s' [prefix='%s'] localName='%s' qName='%s'\n",
-                          uri, prefix, localName, qName);
+        logger.fine("Element-Start uri='" +uri+ "' [prefix='" +prefix+ "'] localName='" +localName+ "' qName='" +qName+ "'");
         updateDigest(qName);
 
         for (int i = 0; i < attributes.getLength(); i++) {
-            System.err.printf("Attribute qName='%s' value='%s'\n", attributes.getQName(i), attributes.getValue(i));
+            logger.fine("Attribute qName='"+attributes.getQName(i)+"' value='"+attributes.getValue(i)+"'");
             updateHash(attributes.getQName(i));
             updateHash(attributes.getValue(i));
         }
@@ -170,13 +176,13 @@ extends DefaultHandler
 
     public void    skippedEntity(String name)
     {
-        System.err.printf("Skipping entity name='%s'\n", name);
+        logger.finer("Skipping entity name='"+name+"'\n");
         //updateDigest(name);
     }
 
     public void    unparsedEntityDecl(String name, String publicId, String systemId, String notationName)
     {
-        System.err.printf("Un-parsed entity name='%s publicId='%s' systemId='%s' notationName='%s'\n", name, publicId, systemId, notationName);
+        logger.finer("Un-parsed entity name='"+name+"'"+publicId+"' systemId='"+systemId+"' notationName='"+notationName+"'");
         //updateDigest(name);
         //updateDigest(publicId);
         //updateDigest(systemId);
@@ -192,7 +198,7 @@ extends DefaultHandler
     {
         String charData = (new String(ch, start, length)).trim();
         if (charData.length() > 0) { 
-            System.err.printf("Character data [%s]\n", charData);
+            logger.fine("Character data ["+charData+"]");
             updateDigest(charData);
         }
         //updateDigest(ch, start, length);
@@ -204,8 +210,7 @@ extends DefaultHandler
         if (this.prefix_map.containsKey(uri)) {
             prefix_str = " [prefix = '" + this.prefix_map.get(uri) + "']";
         }
-        System.err.printf("Element-End uri='%s'%s localName='%s' qName='%s'\n",
-                          uri, prefix_str, localName, qName);
+        logger.fine("Element-End uri='"+uri+"'"+prefix_str+" localName='"+localName+"' qName='"+qName+"'");
         updateDigest(qName);
     }
 
@@ -214,7 +219,7 @@ extends DefaultHandler
         String uri;
         if (this.uri_map.containsKey(prefix)) {
             uri = this.uri_map.get(prefix);
-            System.err.printf("Removing prefix '%s' [uri = %s]\n", prefix, uri);
+            logger.finer("Removing prefix '"+prefix+"' [uri = "+uri+"]");
             // Removing URI from map
             this.uri_map.remove(prefix);
 
@@ -224,7 +229,7 @@ extends DefaultHandler
             }
         }
         else {
-            System.err.printf("Prefix '%s' does not exist, cannot remove.\n", prefix);
+            logger.finer("Prefix '"+prefix+"' does not exist, cannot remove.");
         }
 
         if (this.prefix == prefix) {
@@ -234,18 +239,18 @@ extends DefaultHandler
 
     public void    endDocument()
     {
-        System.err.printf("Document-End\n");
+        logger.fine("Document-End\n");
     }
 
 
     public void    notationDecl(String name, String publicId, String systemId)
     {
-        System.err.printf("Notation Declaration name='%s publicId='%s' systemId='%s'\n", name, publicId, systemId);
+        logger.finer("Notation Declaration name='"+name+" publicId='"+publicId+"' systemId='"+systemId+"'");
     }
 
     public void    processingInstruction(String target, String data)
     {
-        System.err.printf("Processing Instruction target='%s data='%s'\n", target, data);
+        logger.finer("Processing Instruction target='"+target+" data='"+data+"'");
     }
 
     /*

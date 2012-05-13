@@ -30,7 +30,8 @@ public class XMLValidator
 
     private Validator validator = null;
 
-    private boolean ready    = false;
+    private boolean ready = false;
+    private boolean valid = false;
 
  // constructor(s)
     public XMLValidator(Schema schema)
@@ -49,6 +50,7 @@ public class XMLValidator
         try {
             validator.validate(new StreamSource(xmlFile));
             logger.info("XML file '" +xmlFile+ "' passed validation.");
+            valid = true;
         } catch (SAXException e) {
             logger.severe("XML file did not pass validation.\n Details: " +e);
             throw new RuntimeException("XML file failed validation.");
@@ -56,5 +58,9 @@ public class XMLValidator
             logger.severe("Failed to read XML file '" +xmlFile+ "'.\n Details: " +e);
             throw new RuntimeException("Could not read XML file.");
         }
+    }
+
+    public boolean isValid() {
+        return this.valid;
     }
 }

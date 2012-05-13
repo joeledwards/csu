@@ -46,14 +46,16 @@ public class Main
             throw new RuntimeException("Could not read validation file.");
         }
 
-        String catalog = "Catalog.xml";
+        String catalog = "catalog.xml";
 
         XMLValidator validator = new XMLValidator(schema);
         DOMReader dom = new DOMReader(schema);
         SAXReader sax = new SAXReader(schema);
 
         System.err.printf("=== START VALIDATION ====================\n");
+        boolean valid = false;
         validator.validate(catalog);
+        valid = true;
         System.err.printf("=== STOP VALIDATION ====================\n");
         System.err.printf("\n");
 
@@ -72,6 +74,11 @@ public class Main
         // Document parse mode comparison
         System.err.printf("DOMReader SHA-1 Digest [%s]\n", domDigest);
         System.err.printf("SAXReader SHA-1 Digest [%s]\n", saxDigest);
+        System.err.printf("\n");
+
+        System.err.printf("Validator Validation Result: %s\n", valid ? "VALID" : "INVALID");
+        System.err.printf("DOMReader Validation Result: %s\n", dom.isValid() ? "VALID" : "INVALID");
+        System.err.printf("SAXReader Validation Result: %s\n", sax.isValid() ? "VALID" : "INVALID");
     }
 
     public static void error(String message)

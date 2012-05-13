@@ -31,13 +31,14 @@ public class SAXReader
     private SAXParser saxParser = null;
     private SAXHandler saxHandler = null;
 
+    private boolean valid = false;
+
  // constructor(s)
     public SAXReader(Schema schema)
     {
         saxFactory = SAXParserFactory.newInstance();
         saxFactory.setNamespaceAware(true);
         if (schema != null) {
-            saxFactory.setValidating(true);
             saxFactory.setSchema(schema);
         }
         try {
@@ -70,7 +71,14 @@ public class SAXReader
     {
         try {
             saxParser.parse(xmlFile, this.saxHandler);
-            //logger.info("Configuration file parsed.");
+            XMLParseErrorHandler errorHandler = (XMLParseErrorHandler)saxHandler.getErrorHandler();
+            logger.info("SAX Parse Complete. Error Summary [" + 
+                        "fatal-errors:" + errorHandler.getFatalErrorCount() +
+                            ", errors:" + errorHandler.getErrorCount() +
+                          ", warnings:" + errorHandler.getWarningCount() + "]");
+            if (errorHandler.getFatalErrorCount() < 1) {
+                valid = true;
+            }
         } catch (SAXException e) {
             logger.severe("Could not assemble DOM from config file '" +xmlFile+ "'.\n Details: " +e);
             throw new RuntimeException("Could not assemble configuration from file.");
@@ -80,5 +88,9 @@ public class SAXReader
         }
 
         return saxHandler.getHexDigest();
+    }
+
+    public boolean isValid() {
+        return valid;
     }
 }
