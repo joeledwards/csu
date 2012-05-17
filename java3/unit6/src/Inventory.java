@@ -34,9 +34,7 @@ public class Inventory {
         book.setYear(year);
         book.setIsbn(isbn);
         book.setPrice(price);
-
-        ArrayList<BookT> books = (ArrayList)(inventory.getBook());
-        books.add(book);
+        inventory.getBook().add(book);
     }
 
     public void marshal() {

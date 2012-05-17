@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,26 +56,26 @@ public class Main
 
         String books = "books.xml";
 
+        logger.info("=== Begin = JAXB XML Generation ===");
+
         Inventory inv = new Inventory();
         inv.addBook("Java Knows Best",
                     "Joel Edwards",
                     "Buzuli Publishing",
-                    new BigInteger(2012),
-                    new BigInteger(0023449903),
+                    BigInteger.valueOf(2012L),
+                    BigInteger.valueOf(23449903L),
                     0.0);
+
         inv.addBook("JAXB Methods",
                     "Joel Edwards",
                     "Buzuli Publishing",
-                    new BigInteger(2013),
-                    new BigInteger(0023460249),
+                    BigInteger.valueOf(2013L),
+                    BigInteger.valueOf(23460249L),
                     0.0);
         inv.marshal();
 
-        try {
-            dom.xpathOperations();
-        } catch (XPathExpressionException ex) {
-            logger.severe("Error with XPath expression: " + ex.toString());
-        }
+        logger.info("=== End = JAXB XML Generation ===");
+
     }
 
     public static void error(String message)
