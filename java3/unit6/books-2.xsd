@@ -3,12 +3,12 @@
             xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:inv="books.schemas.csu"
-            inv:schemaLocation="http://scaglietti.dyndns.org books.xsd">
+            targetNamespace="books.schemas.csu"
+            elementFormDefault="qualified"
+            attributeFormDefault="qualified"
+            inv:schemaLocation="http://scaglietti.dyndns.org books-2.xsd">
         <!--
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            elementFormDefault="qualified"
-            targetNamespace="books.schemas.csu"
-            attributeFormDefault="qualified"
           -->
 
     <!-- root -->
@@ -18,13 +18,10 @@
     <xsd:element name="book" type="inv:book_T" />
 
     <!-- book elements -->
-    <xsd:element name="title"     type="inv:title_T" />
-    <xsd:element name="publisher" type="inv:publisher_T" />
-    <xsd:element name="isbn"      type="inv:isbn_T" />
-    <xsd:element name="price"     type="inv:price_T" />
-    <!-- book attributes -->
-    <xsd:element name="year"      type="inv:year_T" />
-    <xsd:element name="author"    type="inv:author_T" />
+    <xsd:element name="title"     type="xsd:string" />
+    <xsd:element name="publisher" type="xsd:string" />
+    <xsd:element name="isbn"      type="xsd:nonNegativeInteger" />
+    <xsd:element name="price"     type="xsd:double" />
 
     <xsd:complexType name="inventory_T">
         <xsd:choice minOccurs="1" maxOccurs="unbounded">
@@ -34,10 +31,10 @@
 
     <xsd:complexType name="book_T">
         <xsd:all>
-            <xsd:element ref="title"     minOccurs="1" maxOccurs="1" />
-            <xsd:element ref="publisher" minOccurs="1" maxOccurs="1" />
-            <xsd:element ref="isbn"      minOccurs="1" maxOccurs="1" />
-            <xsd:element ref="price"     minOccurs="1" maxOccurs="1" />
+            <xsd:element ref="inv:title"     minOccurs="1" maxOccurs="1" />
+            <xsd:element ref="inv:publisher" minOccurs="1" maxOccurs="1" />
+            <xsd:element ref="inv:isbn"      minOccurs="1" maxOccurs="1" />
+            <xsd:element ref="inv:price"     minOccurs="1" maxOccurs="1" />
         </xsd:all>
         <xsd:attribute name="year"   use="required" type="xsd:nonNegativeInteger" />
         <xsd:attribute name="author" use="required" type="xsd:string" />

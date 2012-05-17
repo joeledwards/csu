@@ -1,11 +1,11 @@
-<project name="catalog" default="test" basedir=".">
+<project name="inventory" default="tests" basedir=".">
     <description>
-        Verifies a catalog XML document against an XML Schema.
+        Tests auto generation of the inventory package by JAXB versions 1.0 and 2.0
     </description>
     <property name="src" location="src"/>
     <property name="build" location="build"/>
     <property name="libs" location="libs"/>
-    <property name="jar" location="catalog.jar"/>
+    <property name="jar" location="inventory.jar"/>
     <property name="main_class" value="Main"/>
 
     <path id="compile.class.path">
@@ -34,8 +34,35 @@
         <mkdir dir="${build}"/>
     </target>
 
+<!--JAXB-->
+    <target name="jaxb1" depends="init" description="Build the JAXB Version 1.0 classes">
+        <exec executable="xjc">
+            <arg value="-p" />
+            <arg value="inventory" />
+            <arg value="-d" />
+            <arg value="src" />
+            <arg value="books-1.xsd" />
+        </exec>
+    </target>
+
+    <target name="jaxb2" depends="init" description="Build the JAXB Version 2.0 classes">
+        <exec executable="xjc">
+            <arg value="-p" />
+            <arg value="inventory" />
+            <arg value="-d" />
+            <arg value="src" />
+            <arg value="books-2.xsd" />
+        </exec>
+    </target>
+
 <!--COMPILE-->
-    <target name="compile" depends="init" description="Compile the source">
+    <target name="compile1" depends="jaxb1" description="Compile the source">
+        <javac srcdir="${src}" destdir="${build}" debug="on" includeantruntime="no" >
+            <classpath refid="compile.class.path"/>
+        </javac>
+    </target>
+
+    <target name="compile2" depends="jaxb2" description="Compile the source">
         <javac srcdir="${src}" destdir="${build}" debug="on" includeantruntime="no" >
             <classpath refid="compile.class.path"/>
         </javac>
@@ -51,13 +78,21 @@
         <delete dir="${build}/META-INF"/>
     </target>
 
-<!--TEST-->
-    <target name="test" depends="compile" description="compile and test" >
+<!--TESTS-->
+    
+    <target name="test1" depends="clean, compile1" description="test JAXB 1.0" >
         <java classname="${main_class}" classpathref="test.class.path" fork="true" />
     </target>
 
+    <target name="test2" depends="clean, compile2" description="test JAXB 2.0" >
+        <java classname="${main_class}" classpathref="test.class.path" fork="true" />
+    </target>
+
+    <target name="tests" depends="test1, test2" description="compile and test" >
+    </target>
+
 <!--PACKAGE-->
-    <target name="package" depends="libraries, compile" description="generate the distribution" >
+    <target name="package" depends="libraries, compile2" description="generate the distribution" >
         <jar jarfile="${jar}" basedir="${build}">
             <manifest>
                 <attribute name="Main-Class" value="${main_class}"/>
@@ -67,7 +102,8 @@
 
 <!--CLEAN-->
     <target name="clean" description="clean up" >
-        <delete dir="${build}"/>
         <delete file="${jar}"/>
+        <delete dir="${build}"/>
+        <delete dir="${src}/inventory"/>
     </target>
 </project>
