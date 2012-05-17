@@ -2,11 +2,14 @@
 <xsd:schema jxb:version="1.0"
             xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:inv="books.schemas.csu"
-            targetNamespace="books.schemas.csu"
             inv:schemaLocation="http://scaglietti.dyndns.org books.xsd">
-            <!--elementFormDefault="qualified" attributeFormDefault="qualified"-->
+        <!--
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            elementFormDefault="qualified"
+            targetNamespace="books.schemas.csu"
+            attributeFormDefault="qualified"
+          -->
 
     <!-- root -->
     <xsd:element name="inventory" type="inv:inventory_T"/>
