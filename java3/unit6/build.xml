@@ -81,11 +81,17 @@
 <!--TESTS-->
     
     <target name="test1" depends="clean, compile1" description="test JAXB 1.0" >
-        <java classname="${main_class}" classpathref="test.class.path" fork="true" />
+        <java classname="${main_class}" classpathref="test.class.path" fork="true">
+            <arg value="books-1.xsd" />
+            <arg value="books.xml" />
+        </java>
     </target>
 
     <target name="test2" depends="clean, compile2" description="test JAXB 2.0" >
-        <java classname="${main_class}" classpathref="test.class.path" fork="true" />
+        <java classname="${main_class}" classpathref="test.class.path" fork="true">
+            <arg value="books-2.xsd" />
+            <arg value="books.xml" />
+        </java>
     </target>
 
     <target name="tests" depends="test1, test2" description="compile and test" >

@@ -2,20 +2,19 @@
 <xsd:schema jxb:version="2.0"
             xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            attributeFormDefault="qualified">
+        <!--inv:schemaLocation="http://scaglietti.dyndns.org books-2.xsd"
             xmlns:inv="books.schemas.csu"
             targetNamespace="books.schemas.csu"
-            elementFormDefault="qualified"
-            attributeFormDefault="qualified"
-            inv:schemaLocation="http://scaglietti.dyndns.org books-2.xsd">
-        <!--
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           -->
 
     <!-- root -->
-    <xsd:element name="inventory" type="inv:inventory_T"/>
+    <xsd:element name="inventory" type="inventory_T"/>
 
     <!-- book -->
-    <xsd:element name="book" type="inv:book_T" />
+    <xsd:element name="book" type="book_T" />
 
     <!-- book elements -->
     <xsd:element name="title"     type="xsd:string" />
@@ -25,16 +24,16 @@
 
     <xsd:complexType name="inventory_T">
         <xsd:choice minOccurs="1" maxOccurs="unbounded">
-            <xsd:element ref="inv:book" />
+            <xsd:element ref="book" />
         </xsd:choice>
     </xsd:complexType>
 
     <xsd:complexType name="book_T">
         <xsd:all>
-            <xsd:element ref="inv:title"     minOccurs="1" maxOccurs="1" />
-            <xsd:element ref="inv:publisher" minOccurs="1" maxOccurs="1" />
-            <xsd:element ref="inv:isbn"      minOccurs="1" maxOccurs="1" />
-            <xsd:element ref="inv:price"     minOccurs="1" maxOccurs="1" />
+            <xsd:element ref="title"     minOccurs="1" maxOccurs="1" />
+            <xsd:element ref="publisher" minOccurs="1" maxOccurs="1" />
+            <xsd:element ref="isbn"      minOccurs="1" maxOccurs="1" />
+            <xsd:element ref="price"     minOccurs="1" maxOccurs="1" />
         </xsd:all>
         <xsd:attribute name="year"   use="required" type="xsd:nonNegativeInteger" />
         <xsd:attribute name="author" use="required" type="xsd:string" />

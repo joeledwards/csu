@@ -24,6 +24,9 @@ import joptsimple.OptionSet;
 
 import org.xml.sax.SAXException;
 
+import inventory.BookT;
+import inventory.InventoryT;
+
 public class Main
 {
     private static final Logger logger = Logger.getLogger("Main");
@@ -52,29 +55,37 @@ public class Main
     {
         findConsoleHandler();
         consoleHandler.setLevel(Level.ALL);
-        Logger.getLogger("").setLevel(Level.ALL);
+        Logger.getLogger("").setLevel(Level.INFO);
 
-        String books = "books.xml";
+        String schemaFile = argv[0];
+        String xmlFile = argv[1];
 
-        logger.info("=== Begin = JAXB XML Generation ===");
+        ArrayList<File> schemas = new ArrayList<File>();
+        schemas.add(new File(schemaFile));
 
-        Inventory inv = new Inventory();
-        inv.addBook("Java Knows Best",
-                    "Joel Edwards",
-                    "Buzuli Publishing",
-                    BigInteger.valueOf(2012L),
-                    BigInteger.valueOf(23449903L),
-                    0.0);
+        logger.info("=== Begin = JAXB Unmarshal ===");
+        XMLValidator validator = new XMLValidator(schemas);
+        validator.validate(xmlFile);
+        Inventory inventory = new Inventory(validator.getSchema());
+        inventory.unmarshal(new File(xmlFile));
+        logger.info("=== End = JAXB Unmarshal ===");
 
-        inv.addBook("JAXB Methods",
-                    "Joel Edwards",
-                    "Buzuli Publishing",
-                    BigInteger.valueOf(2013L),
-                    BigInteger.valueOf(23460249L),
-                    0.0);
-        inv.marshal();
-
-        logger.info("=== End = JAXB XML Generation ===");
+        logger.info("=== Begin = JAXB XML Marshal ===");
+        inventory = new Inventory(validator.getSchema());
+        inventory.addBook(  "Java Knows Best",
+                            "Joel Edwards",
+                            "Buzuli Publishing",
+                            BigInteger.valueOf(2012L),
+                            BigInteger.valueOf(23449903L),
+                            0.0);
+        inventory.addBook(  "JAXB Methods",
+                            "Joel Edwards",
+                            "Buzuli Publishing",
+                            BigInteger.valueOf(2013L),
+                            BigInteger.valueOf(23460249L),
+                            0.0);
+        inventory.marshal();
+        logger.info("=== End = JAXB XML Marshal ===");
 
     }
 
