@@ -46,6 +46,23 @@ public class Inventory
         inventory = document.addNewInventory();
     }
 
+    public void insertBook(int index,
+                           String      title,
+                           String      author,
+                           String      publisher,
+                           BigInteger  year,
+                           BigInteger  isbn,
+                           double      price)
+    {
+        BookT book = inventory.insertNewBook(index);
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setPublisher(publisher);
+        book.setYear(year);
+        book.setIsbn(isbn);
+        book.setPrice(price);
+    }
+
     public void addBook(String      title,
                         String      author,
                         String      publisher,

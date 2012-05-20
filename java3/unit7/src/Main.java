@@ -67,7 +67,7 @@ public class Main
         validator.validate(xmlFile);
 
 
-        logger.info("=== Begin = XMLBeans Marshal ===");
+        System.err.println("=== Begin = XMLBeans Marshal ===");
         inventory = new Inventory(validator.getSchema());
         inventory.addBook(  "Snow Cash",
                             "Neal Stephenson",
@@ -88,38 +88,52 @@ public class Main
                             BigInteger.valueOf(553573862L),
                             7.50);
         inventory.marshal();
-        logger.info("=== End = XMLBeans Marshal ===");
+        System.err.println("=== End = XMLBeans Marshal ===");
 
         System.err.println("");
         
-        logger.info("=== Begin = XMLBeans Unmarshal ===");
+        System.err.println("=== Begin = XMLBeans Unmarshal ===");
         inventory = new Inventory(validator.getSchema());
         inventory.unmarshal(new File(xmlFile));
-        logger.info("=== End = XMLBeans Unmarshal ===");
+        System.err.println("=== End = XMLBeans Unmarshal ===");
 
         System.err.println("");
         
         XmlCursor cursor = inventory.getCursor();
-        XmlCursor result;
         boolean found;
 
-        logger.info("=== Begin = XQuery First Node ===");
-        result = cursor.execQuery("/inventory/book[0]/@author");
-        System.err.println("The first author's name is " + result.getTextValue());
-        logger.info("=== End = XQuery First Node ===");
-
-        logger.info("=== Begin = XPath Titles ===");
-        cursor.selectPath("/inventory/book/title");
+        System.err.println("=== Begin = XPath Titles ===");
         cursor.toStartDoc();
-        found = cursor.toFirstChild();
-        while (found) {
+        cursor.selectPath("./inventory/book/title");
+        while (cursor.hasNextSelection()) {
+            cursor.toNextSelection();
             System.err.println("\"" + cursor.getTextValue() + "\"");
-            found = cursor.toNextSibling();
         }
-        logger.info("=== End = XPath Titles ===");
+        System.err.println("=== End = XPath Titles ===");
 
-        logger.info("=== Begin = New Book ===");
-        logger.info("=== End = New Book ===");
+        System.err.println("");
+
+        System.err.println("=== Begin = XQuery First Node ===");
+        cursor.toStartDoc();
+        cursor.selectPath("./inventory/book/@author");
+        if (cursor.hasNextSelection()) {
+            cursor.toNextSelection();
+            System.err.println("The first author's name is " + cursor.getTextValue());
+        }
+        System.err.println("=== End = XQuery First Node ===");
+
+        System.err.println("");
+
+        System.err.println("=== Begin = New Book ===");
+        inventory.insertBook( 0,
+                              "Something Interesting",
+                              "Larry Niven",
+                              "Some body",
+                              BigInteger.valueOf(1992L),
+                              BigInteger.valueOf(121212121L),
+                              157.99);
+        inventory.marshal();
+        System.err.println("=== End = New Book ===");
     }
 
     public static void error(String message)
