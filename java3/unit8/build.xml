@@ -8,8 +8,6 @@
     <property name="jar" location="inventory.jar"/>
     <property name="main_class" value="Main"/>
 
-    <taskdef name="xmlbean" classname="org.apache.xmlbeans.impl.tool.XMLBean" classpath="${libs}/xbean.jar"/>
-
     <path id="compile.class.path">
         <pathelement location="${src}"/>
         <fileset dir="${libs}">
@@ -36,20 +34,8 @@
         <mkdir dir="${build}"/>
     </target>
 
-<!--XMLBeans-->
-    <target name="xmlbeans" depends="init" description="Build the XMLBeans Version classes">
-        <xmlbean schema="books.xsd" javasource="1.5" srconly="true" srcgendir="${src}" classgendir="${build}" />
-        <!--xmlbean schema="books.xsd" destfile="inventory.jar" / -->
-        <!--exec executable="scomp">
-            <arg value="-src" />
-            <arg value="src" />
-            <arg value="books.xsd" />
-            <arg value="books.xsdconfig" />
-        </exec-->
-    </target>
-
 <!--COMPILE-->
-    <target name="compile" depends="xmlbeans" description="Compile the source">
+    <target name="compile" depends="init" description="Compile the source">
         <javac srcdir="${src}" destdir="${build}" debug="on" includeantruntime="no" >
             <classpath refid="compile.class.path"/>
         </javac>
@@ -68,10 +54,7 @@
 <!--TESTS-->
     
     <target name="test" depends="clean, compile" description="test XMLBeans" >
-        <java classname="${main_class}" classpathref="test.class.path" fork="true">
-            <arg value="books.xsd" />
-            <arg value="books.xml" />
-        </java>
+        <java classname="${main_class}" classpathref="test.class.path" fork="true" />
     </target>
 
 <!--PACKAGE-->
